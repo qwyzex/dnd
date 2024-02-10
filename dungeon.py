@@ -1,22 +1,31 @@
 import random
+from utils import C
 from player import Player
 from combat import battle  # Import the battle function from combat.py
+
+def clear_screen():
+    print('\033c', end='')
 
 class Dungeon:
     def __init__(self, length, player):
         self.length = length
-        self.rooms = ["enemy" if random.random() < 0.95 else "treasure" if random.random() < 0.05 else "camp" for _ in range(length)]
+        self.rooms = ["enemy" if random.random() < 0.95 else "treasure" for _ in range(length)]
         self.player = player  # Store the player object
 
+    #def reset(self, player):
+    #    player.current_room = 0
+    #    self.rooms = ["enemy" if random.random() < 0.95 else "treasure" if random.random() < 0.05 else "camp" for _ in range(length)]
+
     def explore_room(self):
-        room_type = self.rooms[self.player.current_room]
-        if self.player.current_room % 5 == 0:  # Camp every 5th room
+        clear_screen()
+        room_type = self.rooms[self.player.current_room - 1]
+        print(f"{C.blue("ROOM")} {self.player.current_room}")
+        if self.player.current_room > 0 and self.player.current_room % 5 == 0:  # Camp every 5th room
             print("You found a camp! You can rest here.")
             self.player.rest(20)  # Restore player health
         elif room_type == "enemy":
             print("Enemy encounter! Get ready to fight!")
             if not battle(self.player):  # Pass the player object to the battle function
-                print("You were defeated! Game over.")
                 return False  # End exploration if the player is defeated
         elif room_type == "treasure":
             print("You found a treasure chest!")
@@ -24,15 +33,5 @@ class Dungeon:
 
         # Increment current room
         self.player.current_room += 1
-
-        # Check if all rooms have been cleared
-        if self.player.current_room < self.length:
-            response = input("Do you want to continue exploring? (yes/no): ").lower()
-            if response == "yes":
-                self.explore_room()
-            else:
-                print("Exiting dungeon.")
-        else:
-            print("You've cleared all rooms in the dungeon. Exiting dungeon.")
 
         return True  # Continue exploration if the player is still alive or found a treasure

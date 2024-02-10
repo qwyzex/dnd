@@ -11,6 +11,7 @@ class Player:
         self.experience_to_next_level = 100
         # Attack Blocking
         self.block_strength = 5  # Amount of damage reduced when blocking
+        self.is_blocking = False
         # Healing Potion
         self.heal_amount = 15  # Amount of health restored when healing
         self.heal_cooldown_duration = 3  # Cooldown period for healing ability (in turns)
@@ -20,7 +21,7 @@ class Player:
         self.heavy_attack_cooldown_duration = 5  # Cooldown period for heavy attack ability (in turns)
         self.heavy_attack_cooldown = 0  # Turns remaining until heavy attack ability is available again
         # DUNGEONS
-        self.current_room = 0
+        self.current_room = 1
 
     # Player main functions
     def stat(self):
@@ -71,10 +72,11 @@ class Player:
     def attack(self, enemy):
         damage = self.attack_power
         enemy.take_damage(damage)
+        print(f"{self.name} inflicting {damage} damage!")
 
     def heavy_attack(self, enemy):
         if self.heavy_attack_cooldown == 0:
-            damage = self.attack_power * self.heavy_attack_mod
+            damage = round(self.attack_power * self.heavy_attack_mod)
             enemy.take_damage(damage)
             print(f"{self.name} performs a heavy attack, dealing {damage} damage!")
             self.heavy_attack_cooldown = self.heavy_attack_cooldown_duration
@@ -82,19 +84,19 @@ class Player:
             print("Heavy attack is on cooldown.")
 
     def take_damage(self, damage):
-        self.current_health -= damage
-        if self.current_health <= 0:
-            print(f"{self.name} has been defeated!")
-        else:
-            print(f"{self.name} take {damage} damage!")
-
-    def block_attack(self, damage):
-        if damage > 0:
+        if self.is_blocking:
             blocked_damage = max(0, damage - self.block_strength)
-            self.take_damage(blocked_damage)
+            self.current_health -= max(0, blocked_damage)
             print(f"{self.name} blocks the enemy's attack and takes {blocked_damage} damage.")
         else:
-            print(f"{self.name} braces for an attack, but the enemy does not attack.")
+            self.current_health -= max(0, damage)
+            print(f"{self.name} take {damage} damage!")
+
+        if self.current_health <= 0:
+            print(f"{self.name} has been defeated!")
+
+    def block_attack(self, damage):
+        self.is_blocking = True
 
     def heal(self):
         if self.heal_cooldown == 0:
