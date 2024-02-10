@@ -1,9 +1,12 @@
 from player import Player
+from dungeon import Dungeon
 
 def main():
     # Initialize player
     player_name = input("Enter your player name: ")
     player = Player(player_name, max_health=100, attack_power=10)  # You can adjust initial stats as needed
+
+    dungeon = Dungeon(10, player)
 
     print("Welcome to the Doodling n Duckling game!")
     print("Type 'help' for a list of commands.")
@@ -16,33 +19,18 @@ def main():
             print("Available commands:")
             print(" - stat: Display player's current stats")
             print(" - statfull: Display detailed player's stats")
-            print(" - attack: Attack an enemy")
-            print(" - heavy_attack: Perform a heavy attack (cooldown: 5 turns)")
-            print(" - rest: Rest and restore health")
+            print(" - explore: Explore the dungeon")
             print(" - quit: Exit the game")
 
         elif command == "stat":
             player.stat()
-
         elif command == "statfull":
-            player.statfull()
-
-        elif command == "attack":
-            # Placeholder for attack functionality
-            pass
-
-        elif command == "heavy_attack":
-            # Placeholder for heavy attack functionality
-            pass
-
-        elif command == "rest":
-            # Placeholder for rest functionality
-            pass
-
+            player.statf()
+        elif command == "explore":
+            dungeon.explore_room()
         elif command == "quit":
             print("Exiting the game. Goodbye!")
             break
-
         else:
             print("Invalid command. Type 'help' for a list of commands.")
 

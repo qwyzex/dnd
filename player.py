@@ -19,6 +19,8 @@ class Player:
         self.heavy_attack_mod = min(1.1 * 1.0 + (0.1 * self.level), 2.0)  #Heavy Attack Increase Modifier
         self.heavy_attack_cooldown_duration = 5  # Cooldown period for heavy attack ability (in turns)
         self.heavy_attack_cooldown = 0  # Turns remaining until heavy attack ability is available again
+        # DUNGEONS
+        self.current_room = 0
 
     # Player main functions
     def stat(self):
