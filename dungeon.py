@@ -26,8 +26,9 @@ class Dungeon:
             if not battle(self.player):  # Pass the player object to the battle function
                 return False  # End exploration if the player is defeated
         elif room_type == "treasure":
-            print("You found a treasure chest!")
-            self.player.gain_experience(XP.en.treasure)
+            print(f"You found a {C.yellow("treasure")} chest!")
+            self.player.collect_gold("Treasure Chest", 1, 3)
+            self.player.gain_experience(XP.ev.treasure)
             # Implement treasure discovery logic here
 
         # Increment current room
