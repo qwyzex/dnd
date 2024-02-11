@@ -1,10 +1,8 @@
 import random
-from utils import C
+from utils import C, clears
+from libs import XP
 from player import Player
 from combat import battle  # Import the battle function from combat.py
-
-def clear_screen():
-    print('\033c', end='')
 
 class Dungeon:
     def __init__(self, length, player):
@@ -17,7 +15,7 @@ class Dungeon:
     #    self.rooms = ["enemy" if random.random() < 0.95 else "treasure" if random.random() < 0.05 else "camp" for _ in range(length)]
 
     def explore_room(self):
-        clear_screen()
+        clears()
         room_type = self.rooms[self.player.current_room - 1]
         print(f"{C.blue("ROOM")} {self.player.current_room}")
         if self.player.current_room > 0 and self.player.current_room % 5 == 0:  # Camp every 5th room
@@ -29,6 +27,7 @@ class Dungeon:
                 return False  # End exploration if the player is defeated
         elif room_type == "treasure":
             print("You found a treasure chest!")
+            self.player.gain_experience(XP.en.treasure)
             # Implement treasure discovery logic here
 
         # Increment current room

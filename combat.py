@@ -1,5 +1,6 @@
 import random
 from utils import C
+from libs import XP
 from player import Player
 
 class Enemy:
@@ -29,6 +30,7 @@ def battle(player):
     def proceed():
         if enemy.health <= 0:
             print(f"{C.green('You defeated the')} {C.green(enemy.name)}")
+            player.gain_experience(XP.en.goblin)
             player.current_room += 1
             player.reduce_cooldown()
             if player.is_blocking:

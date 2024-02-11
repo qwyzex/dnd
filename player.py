@@ -1,3 +1,5 @@
+from utils import roundF
+
 class Player:
     def __init__(self, name, max_health, attack_power):
         self.name = name
@@ -17,7 +19,7 @@ class Player:
         self.heal_cooldown_duration = 3  # Cooldown period for healing ability (in turns)
         self.heal_cooldown = 0  # Turns remaining until healing ability is available again
         # Heavy Attack
-        self.heavy_attack_mod = min(1.1 * 1.0 + (0.1 * self.level), 2.0)  #Heavy Attack Increase Modifier
+        self.heavy_attack_mod = roundF(min(1.1 * 1.0 + (0.1 * self.level), 2.0))  #Heavy Attack Increase Modifier
         self.heavy_attack_cooldown_duration = 5  # Cooldown period for heavy attack ability (in turns)
         self.heavy_attack_cooldown = 0  # Turns remaining until heavy attack ability is available again
         # DUNGEONS
@@ -45,6 +47,9 @@ class Player:
         self.experience += amount
         if self.experience >= self.experience_to_next_level:
             self.level_up()
+            print(f"{self.name} gain {amount} EXP and leveled up to level {self.level}!\nEXP need to next level: {self.experience}/{self.experience_to_next_level}")
+        else:
+            print(f"{self.name} gain {amount} EXP!\nEXP need to next level: {self.experience}/{self.experience_to_next_level}")
 
     def increase_max_health(self):
         base_health_increase = 7
@@ -66,7 +71,6 @@ class Player:
         self.heal_amount += 3
         if self.level % 7 == 0 and self.heavy_attack_cooldown_duration > 3:
             self.heavy_attack_cooldown_duration -= 1
-        print(f"{self.name} leveled up to level {self.level}!")
 
     # Combat Abilities
     def attack(self, enemy):

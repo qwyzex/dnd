@@ -25,3 +25,15 @@ class C:
     @staticmethod
     def white(text):
         return f"{Fore.WHITE}{text}{Fore.RESET}"
+
+def clears():
+    print('\033c', end='')
+
+def roundF(num):
+    rounded_num = round(num, 3)  # Round to 3 decimal places
+    last_digit = int(rounded_num * 1000) % 10  # Get the last digit after rounding
+    if last_digit < 5:  # If the last digit is less than 5, round up
+        rounded_num = round(rounded_num + 0.005, 2)  # Add 0.005 to round up
+    else:  # If the last digit is greater than or equal to 5, round down
+        rounded_num = round(rounded_num - 0.005, 2)  # Subtract 0.005 to round down
+    return rounded_num
