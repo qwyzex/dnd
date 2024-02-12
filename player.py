@@ -116,7 +116,7 @@ class Player:
     def heal(self):
         if self.heal_cooldown == 0:
             self.current_health = min(self.max_health, self.current_health + self.heal_amount)
-            print(f"{C.cyan(self.n)ame} heals for {self.heal_amount} health!")
+            print(f"{C.cyan(self.name)} heals for {self.heal_amount} health!")
             self.heal_cooldown = self.heal_cooldown_duration
         else:
             print(C.yellow("   Healing ability is on cooldown."))
