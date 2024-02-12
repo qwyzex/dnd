@@ -43,11 +43,11 @@ def battle(player):
         battle_status()
 
         if player.current_health <= 0:
-            print(f"\n{C.red("You have been defeated by a")} {C.red(enemy.name)}")
+            print(f"\n{C.red('You have been defeated by a')} {C.red(enemy.name)}")
             return False
 
     while player.current_health > 0 and enemy.health > 0:
-        action = input(f"\nChoose your action: [{C.red("attack")}], [{C.red("hattack")} {player.heavy_attack_cooldown}], [{C.green("heal")} {player.heal_cooldown}], [{C.blue("block")}], or [{C.yellow("flee")}]? ").strip().lower()
+        action = input(f"\nChoose your action: [{C.red('attack')}], [{C.red('hattack')} {player.heavy_attack_cooldown}], [{C.green('heal')} {player.heal_cooldown}], [{C.blue('block')}], or [{C.yellow('flee')}]? ").strip().lower()
         print("")
         if action == "attack" or action == "a":
             player.attack(enemy)

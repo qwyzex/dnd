@@ -52,9 +52,9 @@ class Player:
         self.experience += amount
         if self.experience >= self.experience_to_next_level:
             self.level_up()
-            print(f"\n{C.cyan(self.name)} gain {C.magenta(amount)} {C.magenta("EXP")} and leveled up to level {self.level}!\nEXP need to next level: {self.experience}/{self.experience_to_next_level}")
+            print(f"\n{C.cyan(self.name)} gain {C.magenta(amount)} {C.magenta('EXP')} and leveled up to level {self.level}!\nEXP need to next level: {self.experience}/{self.experience_to_next_level}")
         else:
-            print(f"\n{C.cyan(self.name)} gain {C.magenta(amount)} {C.magenta("EXP")}!\nEXP need to next level: {self.experience}/{self.experience_to_next_level}")
+            print(f"\n{C.cyan(self.name)} gain {C.magenta(amount)} {C.magenta('EXP')}!\nEXP need to next level: {self.experience}/{self.experience_to_next_level}")
 
     # LEVEL UP Constants
     def increase_max_health(self):
@@ -77,7 +77,7 @@ class Player:
     def level_up(self):
         self.level += 1
         self.experience -= self.experience_to_next_level
-        self.experience_to_next_level += 38 + round(self.level * 0.6)  
+        self.experience_to_next_level += 38 + round(self.level * 0.6)
         self.increase_max_health()
         self.increase_attack_power()
         if self.level % 10 == 0 and self.heavy_attack_cooldown_duration > 3:
@@ -87,13 +87,13 @@ class Player:
     def attack(self, enemy):
         damage = self.attack_power
         enemy.take_damage(damage)
-        print(f"{C.cyan(self.name)} inflicting {C.red(damage)} {C.red("damage")}!")
+        print(f"{C.cyan(self.name)} inflicting {C.red(damage)} {C.red('damage')}!")
 
     def heavy_attack(self, enemy):
         if self.heavy_attack_cooldown == 0:
             damage = round(self.attack_power * self.heavy_attack_mod)
             enemy.take_damage(damage)
-            print(f"{C.cyan(self.name)} performs a heavy attack, dealing {C.red(damage)} {C.red("damage")}!")
+            print(f"{C.cyan(self.name)} performs a heavy attack, dealing {C.red(damage)} {C.red('damage')}!")
             self.heavy_attack_cooldown = self.heavy_attack_cooldown_duration
         else:
             print(C.yellow("   Heavy attack is on cooldown."))
@@ -102,10 +102,10 @@ class Player:
         if self.is_blocking:
             blocked_damage = max(0, damage - self.block_strength)
             self.current_health -= max(0, blocked_damage)
-            print(f"{C.cyan(self.name)} blocks the enemy's attack and takes {C.red(blocked_damage)} {C.red("damage")}.")
+            print(f"{C.cyan(self.name)} blocks the enemy's attack and takes {C.red(blocked_damage)} {C.red('damage')}.")
         else:
             self.current_health -= max(0, damage)
-            print(f"{C.cyan(self.name)} take {C.red(damage)} {C.red("damage")}!")
+            print(f"{C.cyan(self.name)} take {C.red(damage)} {C.red('damage')}!")
 
         # if self.current_health <= 0:
         #    print(C.red("\nYou died!"))
@@ -126,7 +126,7 @@ class Player:
         if random.random() < modifier_gold_chance:
             amount_gold = random.randint(10, 20) * modifier_gold_amount
             self.currency_gold += amount_gold
-            print(f"\n{self.name} collected {C.yellow(amount_gold)} {C.yellow("Gold")} from {object}!")
+            print(f"\n{self.name} collected {C.yellow(amount_gold)} {C.yellow('Gold')} from {object}!")
 
     # Misc
     def reduce_cooldown(self):
@@ -143,4 +143,4 @@ class Player:
             amount_healed = after - before
             print(f"{C.cyan(self.name)} rests and restores {amount_healed} health. Current health: {self.current_health}/{self.max_health}")
         else:
-            print(f"Your health is already full!")
+            print("Your health is already full!")

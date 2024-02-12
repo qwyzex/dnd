@@ -47,10 +47,10 @@ def dungeon_explore(player):
     # Explore each room in the dungeon
     print(C.yellow("\n   Entering Dungeon..."))
     while player.current_room <= dungeon.length and player.current_health > 0:
-        interroominput = input(f"\n>> Press {C.cyan("Enter")} to explore the next room... ").strip().lower()
+        interroominput = input(f"\n>> Press {C.cyan('Enter')} to explore the next room or see stat... ").strip().lower()
         if interroominput == "stat" or interroominput == "statfull":
             player.statf()
-            input(f"\n>> Press {C.cyan("Enter")} to explore the next room... ")
+            input(f"\n>> Press {C.cyan('Enter')} to explore the next room... ")
             dungeon.explore_room()
         else:
             dungeon.explore_room()
