@@ -31,5 +31,5 @@ class EnemyA:
 class BestiaryA:
     def __init__(self, player):
         self.player = player # pass the player param
-        self.goblin = EnemyA("Goblin", 20, 6, 25, self.player, [1, 0.5, 1])
-        self.wolf = EnemyA("Wild Wolf", 18, 8, 30, self.player, [0.95, 0, 0])
+        self.goblin = EnemyA("Goblin", 20, 6, 13, self.player, [1, 0.5, 1])
+        self.wolf = EnemyA("Wild Wolf", 18, 8, 17, self.player, [0.95, 0, 0])
