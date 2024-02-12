@@ -77,6 +77,7 @@ class Player:
     def level_up(self):
         self.level += 1
         self.experience -= self.experience_to_next_level
+        self.experience_to_next_level += 38 + round(self.level * 0.6)  
         self.increase_max_health()
         self.increase_attack_power()
         if self.level % 10 == 0 and self.heavy_attack_cooldown_duration > 3:
@@ -115,7 +116,7 @@ class Player:
     def heal(self):
         if self.heal_cooldown == 0:
             self.current_health = min(self.max_health, self.current_health + self.heal_amount)
-            print(f"{self.name} heals for {self.heal_amount} health!")
+            print(f"{C.cyan(self.n)ame} heals for {self.heal_amount} health!")
             self.heal_cooldown = self.heal_cooldown_duration
         else:
             print(C.yellow("   Healing ability is on cooldown."))
