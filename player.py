@@ -151,4 +151,4 @@ class Player:
             self.reduce_cooldown()
             print(f"{C.cyan(self.name)} rests and restores {amount_healed} health. Current health: {self.current_health}/{self.max_health}")
         else:
-            print("Your health is already full!")
+            print(C.yellow("   Your health is already full!"))

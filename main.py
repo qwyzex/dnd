@@ -13,7 +13,14 @@ def main():
 
     # Initialize player
     print("\nCreating new Character...")
-    player_name = input("Enter your player name: ").strip().upper()
+    player_name = ""
+    while True:
+        player_name = input("Enter your player name: ").strip().upper()
+        if not player_name == "":
+            break
+        elif player_name == "":
+            player_name = "Warrior"
+            break
     player = Player(player_name, max_health=100, attack_power=10)  # Adjust initial stats as needed
 
     welcome(player)
@@ -53,7 +60,7 @@ def dungeon_explore(player):
     dungeon = Dungeon(11, player)
 
     # Explore each room in the dungeon
-    print(C.yellow("   Entering Dungeon..."))
+    print(C.green("   Entering Dungeon..."))
     input(f"\n@> Press {C.cyan('Enter')} to explore the first room... ")
     while player.current_room <= dungeon.length and player.current_health > 0:
         if player.current_room > 1:
