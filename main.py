@@ -8,6 +8,7 @@ def welcome(player):
     print("Type 'help' for a list of commands.")
 
 def main():
+    clears()
     title_wide()
 
     # Initialize player
@@ -19,7 +20,7 @@ def main():
 
     # Main game loop
     while True:
-        command = input("\n>> ").strip().lower()
+        command = input("\n@> ").strip().lower()
         print("")
 
         if command == "help":
@@ -37,9 +38,13 @@ def main():
             player.rest(player.max_health)
         elif command == "explore" or command == "expl":
             dungeon_explore(player)
-        elif command == "quit":
-            print("Exiting the game. Goodbye!\n")
-            break
+        elif command == "quit" or command == "exit" or command == "logout":
+            quit_confirmation = input(f"!> Are you sure you want to exit the game? [Enter, yes/no] ").strip().lower()
+            if quit_confirmation == "yes" or quit_confirmation == "y" or quit_confirmation == "":
+                print("\n   Exiting the game. Goodbye!\n")
+                break
+            elif quit_confirmation == "no" or quit_confirmation == "n" :
+                print("\n   Cancelled.")
         else:
             print(C.yellow("   Invalid command. Type 'help' for a list of commands."))
 
@@ -49,11 +54,15 @@ def dungeon_explore(player):
 
     # Explore each room in the dungeon
     print(C.yellow("   Entering Dungeon..."))
+    input(f"\n@> Press {C.cyan('Enter')} to explore the first room... ")
     while player.current_room <= dungeon.length and player.current_health > 0:
-        interroominput = input(f"\n>> Press {C.cyan('Enter')} to explore the next room or see stat... ").strip().lower()
-        if interroominput == "stat" or interroominput == "statfull":
+        if player.current_room > 1:
+            interroominput = input(f"\n@> Press {C.cyan('Enter')} to explore the next room or see stat... ").strip().lower()
+        else:
+            interroominput = ""
+        if player.current_room > 1 and interroominput == "stat" or interroominput == "statfull":
             player.statf()
-            input(f"\n>> Press {C.cyan('Enter')} to explore the next room... ")
+            input(f"\n@> Press {C.cyan('Enter')} to explore the next room... ")
             dungeon.explore_room()
         else:
             dungeon.explore_room()
@@ -71,7 +80,8 @@ def dungeon_explore(player):
 
     # Ask the player if they want to continue the adventure or exit the dungeon
     while True:
-        choice = input("\n>> Do you want to continue the adventure? (yes/no): ").strip().lower()
+        choice = input("\n!> Do you want to continue the adventure? (yes/no): ").strip().lower()
+        print("")
         if choice == "yes" or choice == "y":
             player.current_room = 1
             dungeon_explore(player)
