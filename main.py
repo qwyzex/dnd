@@ -1,15 +1,18 @@
 import time
-from utils import C, clears
+from utils import C, clears, title_wide
 from player import Player
 from dungeon import Dungeon
 
 def welcome(player):
-    print(f"\nWelcome to the Doodling n Duckling game, {C.cyan(player.name)}!")
+    print(f"\nWelcome to the Doodlings n\' Ducklings game, {C.cyan(player.name)}!")
     print("Type 'help' for a list of commands.")
 
 def main():
+    title_wide()
+
     # Initialize player
-    player_name = input("\nEnter your player name: ").strip().upper()
+    print("\nCreating new Character...")
+    player_name = input("Enter your player name: ").strip().upper()
     player = Player(player_name, max_health=100, attack_power=10)  # Adjust initial stats as needed
 
     welcome(player)
@@ -45,7 +48,7 @@ def dungeon_explore(player):
     dungeon = Dungeon(11, player)
 
     # Explore each room in the dungeon
-    print(C.yellow("\n   Entering Dungeon..."))
+    print(C.yellow("   Entering Dungeon..."))
     while player.current_room <= dungeon.length and player.current_health > 0:
         interroominput = input(f"\n>> Press {C.cyan('Enter')} to explore the next room or see stat... ").strip().lower()
         if interroominput == "stat" or interroominput == "statfull":
