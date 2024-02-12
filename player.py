@@ -11,7 +11,7 @@ class Player:
         # Level and Experience
         self.level = 1
         self.experience = 0
-        self.experience_to_next_level = 70 + (self.level * 30)
+        self.experience_to_next_level = 62 + (38 * round(self.level * 0.6))
         # Attack Blocking
         self.block_strength = round(4 + (self.level * 0.5))  # Amount of damage reduced when blocking
         self.is_blocking = False
@@ -75,12 +75,19 @@ class Player:
         self.attack_power += attack_increase
 
     def level_up(self):
+        # Level and Experiences
         self.level += 1
         self.experience -= self.experience_to_next_level
         self.experience_to_next_level += 38 + round(self.level * 0.6)
+        # Health and Power
         self.increase_max_health()
         self.increase_attack_power()
-        if self.level % 10 == 0 and self.heavy_attack_cooldown_duration > 3:
+        # Level-relative upgrade
+        self.block_strength = round(4 + (self.level * 0.5))
+        self.heal_amount = round(12 + (self.level * 1.2))
+        self.heavy_attack_mod = roundF(min(1.1 * 1.0 + (0.1 * self.level), 2.0))
+        # Every 12 level reduce heavy attack cooldown by 1 until it becomes 3
+        if self.level % 12 == 0 and self.heavy_attack_cooldown_duration > 3:
             self.heavy_attack_cooldown_duration -= 1
 
     # Combat Abilities
@@ -141,6 +148,7 @@ class Player:
             self.current_health = min(self.max_health, self.current_health + amount)
             after = round(self.current_health)
             amount_healed = after - before
+            self.reduce_cooldown()
             print(f"{C.cyan(self.name)} rests and restores {amount_healed} health. Current health: {self.current_health}/{self.max_health}")
         else:
             print("Your health is already full!")
