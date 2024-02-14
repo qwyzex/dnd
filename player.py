@@ -1,17 +1,32 @@
 import random
 from utils import roundF, C
+from inventory import Inventory, Weapon
 
 class Player:
-    def __init__(self, name, level, health, attack_power, gold):
+    # Load Instantiation
+    # player = Player(data["name"], [data["level"], data["experience"]], [data["health_max_base"], data["current_health"]], )
+    #
+    #
+    def __init__(self, name, level, inventory, equipped_items, health, attack_power, gold):
         self.name = name
         # Level and Experience
         self.level = level[0]
         self.experience = level[1]
         self.experience_to_next_level = 62 + (38 * round(self.level * 0.6))
-        # Basic Stat
-        self.max_health = health[0]
-        self.current_health = health[1]
-        self.attack_power = attack_power
+        # Inventory
+        self.inventory = inventory
+        self.equipped_items = equipped_items
+        # Health Stat
+        self.health_max_base = health[0]
+            #self.health_max_item = self.equipped_items["armor"].defense if equipped_items["armor"] is not None else 0
+        self.health_max_item = health[1]
+        self.health_max = self.health_max_base + self.health_max_item
+        self.current_health = health[2]
+        # Power Stat
+        self.attack_power_base = attack_power[0]
+            #self.attack_power_item = self.equipped_items["weapon"].damage if equipped_items["weapon"] is not None else 0
+        self.attack_power_item = attack_power[1]
+        self.attack_power = self.attack_power_base + self. attack_power_item
         # Attack Blocking
         self.block_strength = round(4 + (self.level * 0.5))  # Amount of damage reduced when blocking
         self.is_blocking = False
@@ -33,7 +48,7 @@ class Player:
         print(f"Name            : {self.name}")
         print(f"Level           : {self.level}")
         print(f"Experience      : {self.experience}/{self.experience_to_next_level}")
-        print(f"Health          : {self.current_health}/{self.max_health}")
+        print(f"Health          : {self.current_health}/{self.health_max}")
         print(f"Attack Power    : {self.attack_power}")
         print(f"Gold            : {self.currency_gold}")
 
@@ -41,7 +56,7 @@ class Player:
         print(f"Name            : {self.name}")
         print(f"Level           : {self.level}")
         print(f"Experience      : {self.experience}/{self.experience_to_next_level}")
-        print(f"Health          : {self.current_health}/{self.max_health}")
+        print(f"Health          : {self.current_health}/{self.health_max}")
         print(f"Attack Power    : {self.attack_power}")
         print(f"Block Strength  : {self.block_strength}")
         print(f"Heal Amount     : {self.heal_amount}, {self.heal_cooldown}")
@@ -63,7 +78,7 @@ class Player:
             health_increase = max(base_health_increase + (self.level // 2) - 2, 0)
         else:
             health_increase = max(base_health_increase + ((self.level - 1) // 2) - 2, 0)
-        self.max_health += health_increase
+        self.health_max_base += health_increase
         self.current_health += health_increase
 
     def increase_attack_power(self):
@@ -72,7 +87,7 @@ class Player:
             attack_increase = max(base_attack_increase + (self.level // 2) - 2, 1)
         else:
             attack_increase = max(base_attack_increase + ((self.level - 1) // 2) - 2, 1)
-        self.attack_power += attack_increase
+        self.attack_power_base += attack_increase
 
     def level_up(self):
         # Level and Experiences
@@ -89,6 +104,50 @@ class Player:
         # Every 12 level reduce heavy attack cooldown by 1 until it becomes 3
         if self.level % 12 == 0 and self.heavy_attack_cooldown_duration > 3:
             self.heavy_attack_cooldown_duration -= 1
+
+    # INVENTORY
+    def update_total_stats(self):
+        self.attack_power = self.attack_power_base + self.attack_power_item
+        self.health_max = self.health_max_base + self.health_max_base
+
+    def equip_item(self, item):
+        if isinstance(item, Weapon):
+            if self.equipped_items["weapon"] is not None:
+                self.unequip_item(self.equipped_items["weapon"])
+            self.equipped_items["weapon"] = item
+            self.attack_power_item += item.damage
+            self.update_total_stats()
+            print(f"Equipped {item.name}. Attack power increased by {item.damage}.")
+        elif isinstance(item, Armor):
+            if self.equipped_items["armor"] is not None:
+                self.unequip_item(self.equipped_items["armor"])
+            self.equipped_items["armor"] = item
+            self.health_max_item += item.defense
+            self.update_total_stats()
+            print(f"Equipped {item.name}. Max health increased by {item.defense}.")
+
+    def unequip_item(self, item):
+        if isinstance(item, Weapon):
+            if self.equipped_items["weapon"] == item:
+                self.attack_power_item -= item.damage
+                self.equipped_items["weapon"] = None
+                self.update_total_stats()
+                print(f"Unequipped {item.name}. Attack power decreased by {item.damage}.")
+        elif isinstance(item, Armor):
+            if self.equipped_items["armor"] == item:
+                self.health_max_item -= item.defense
+                self.equipped_items["armor"] = None
+                self.update_total_stats()
+                print(f"Unequipped {item.name}. Max health decreased by {item.defense}.")
+
+    def display_inventory(self):
+        print("Equipped Items:")
+        print(f"Weapon  : {C.cyan(self.equipped_items["weapon"].name) if self.equipped_items["weapon"] is not None else C.yellow("No weapon equipped.")}")
+        print(f"Armor   : {C.cyan(self.equipped_items["armor"].name) if self.equipped_items["armor"] is not None else C.yellow("No armor wore.")}")
+
+        print(f"\nInventory ({len(self.inventory.items)}/{self.inventory.capacity}) :")
+        for item in self.inventory.items:
+            print(f"- {C.cyan(item.name)}: {item.description}")
 
     # Combat Abilities
     def attack(self, enemy):
@@ -122,7 +181,7 @@ class Player:
 
     def heal(self):
         if self.heal_cooldown == 0:
-            self.current_health = min(self.max_health, self.current_health + self.heal_amount)
+            self.current_health = min(self.health_max, self.current_health + self.heal_amount)
             print(f"{C.cyan(self.name)} heals for {self.heal_amount} health!")
             self.heal_cooldown = self.heal_cooldown_duration
         else:
@@ -143,12 +202,12 @@ class Player:
             self.heavy_attack_cooldown -= 1
 
     def rest(self, amount):
-        if self.current_health < self.max_health:
+        if self.current_health < self.health_max:
             before = round(self.current_health)
-            self.current_health = min(self.max_health, self.current_health + amount)
+            self.current_health = min(self.health_max, self.current_health + amount)
             after = round(self.current_health)
             amount_healed = after - before
             self.reduce_cooldown()
-            print(f"{C.cyan(self.name)} rests and restores {amount_healed} health. Current health: {self.current_health}/{self.max_health}")
+            print(f"{C.cyan(self.name)} rests and restores {amount_healed} health. Current health: {self.current_health}/{self.health_max}")
         else:
             print(C.yellow("   Your health is already full!"))

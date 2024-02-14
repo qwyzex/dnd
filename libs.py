@@ -1,10 +1,16 @@
 import random
+from inventory import Item, Weapon, Armor
+
+# ITEMS
+#class WorldItems:
+
 
 class XP:
     class ev:
         treasure = 15
 
-# Enemy Class-A Blueprint
+# ENEMY
+# ENEMY CLASS-A
 class EnemyA:
     def __init__(self, name, health, attack_power, exp_gain, player, modifier):
         self.name = name

@@ -1,6 +1,7 @@
 import time
 import json
 from utils import C, clears, title_wide
+from inventory import Item, Weapon, Armor, Inventory
 from player import Player
 from dungeon import Dungeon
 
@@ -17,9 +18,11 @@ def main():
             "name": player.name,
             "level": player.level,
             "experience": player.experience,
-            "max_health": player.max_health,
+            "health_max": player.health_max,
             "current_health": player.current_health,
             "attack_power": player.attack_power,
+            "inventory": player.inventory,
+            "equipped_items": player.equipped_items,
             "currency_gold": player.currency_gold
         }
 
@@ -30,7 +33,7 @@ def main():
         with open("dnd_save_file.json", "r") as file:
             # return json.load(file)
             x = json.load(file)
-            player = Player(x["name"], [x["level"], x["experience"]], [x["max_health"], x["current_health"]], x["attack_power"], x["currency_gold"])
+            player = Player(x["name"], [x["level"], x["experience"]], x["inventory"], x["equipped_items"], [x["health_max_base"], x["health_max_item"], x["current_health"]], [x["attack_power_base"], x["attack_power_item"]], x["currency_gold"])
     except FileNotFoundError:
         print("N E W   G A M E")
 
@@ -44,7 +47,7 @@ def main():
             elif player_name == "":
                 player_name = "Warrior"
                 break
-        player = Player(player_name, level=[1, 0], health=[100, 100], attack_power=10, gold=0)  # Adjust initial stats as needed
+        player = Player(player_name, level=[1, 0], inventory=Inventory(capacity=20), equipped_items={"weapon": Weapon("Wooden Sword", "Fragile short sword made of Alp wood.", 6), "armor": None}, health=[100, 0, 100], attack_power=[10, 6], gold=0)  # Adjust initial stats as needed
 
     welcome(player)
 
@@ -57,6 +60,7 @@ def main():
             print("Available commands:")
             print(" - stat: Display player's current stats")
             print(" - statfull: Display detailed player's stats")
+            print(" - bag/inventory: Display current inventory")
             print(" - rest: Restore full health")
             print(" - explore: Explore the dungeon")
             print(" - quit: Exit the game")
@@ -64,21 +68,24 @@ def main():
             player.stat()
         elif command == "statfull":
             player.statf()
+        elif command == "bag" or command == "inventory":
+            player.display_inventory()
         elif command == "rest":
-            player.rest(player.max_health)
+            player.rest(player.health_max)
         elif command == "explore" or command == "expl":
             dungeon_explore(player)
         elif command == "quit" or command == "exit" or command == "logout":
             quit_confirmation = input(f"!> Are you sure you want to exit the game? [Enter, yes/no] ").strip().lower()
             if quit_confirmation == "yes" or quit_confirmation == "y" or quit_confirmation == "":
                 print("\n   Exiting the game. Goodbye!\n")
-                save_game(player)
+                #save_game(player)
                 break
             elif quit_confirmation == "no" or quit_confirmation == "n" :
                 print("\n   Cancelled.")
         else:
             print(C.yellow("   Invalid command. Type 'help' for a list of commands."))
 
+# Dungeon System
 def dungeon_explore(player):
     # Create a dungeon with 10 rooms
     dungeon = Dungeon(11, player)
