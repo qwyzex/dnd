@@ -48,7 +48,7 @@ def main():
                 player_name = "Warrior"
                 break
         player = Player(player_name, level=[1, 0], inventory=Inventory(capacity=20), equipped_items={"weapon": None, "armor": None}, health=[100, 0, 100], attack_power=[4, 0], gold=0)  # Adjust initial stats as needed
-        player.inventory.items.append(Weapon("Wooden Sword", "Fragile short sword made of Alp wood.", 6, False))
+        player.inventory.items.append(Weapon("Wooden Sword", "Fragile short sword made of Alp wood.", 4, "a"))
 
     welcome(player)
 

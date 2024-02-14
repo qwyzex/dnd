@@ -8,16 +8,18 @@ class Item:
         self.description = description
 
 class Weapon(Item):
-    def __init__(self, name, description, damage, equipped):
+    def __init__(self, name, description, damage, rarity):
         super().__init__(name, description)
         self.damage = damage
         self.equipped = False
+        self.rarity = rarity
 
 class Armor(Item):
-    def __init__(self, name, description, defense, equipped):
+    def __init__(self, name, description, defense, rarity):
         super().__init__(name, description)
         self.defense = defense
         self.equipped = False
+        self.rarity = rarity
 
 class Inventory:
     def __init__(self, capacity):

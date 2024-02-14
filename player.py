@@ -1,5 +1,6 @@
 import random
 from utils import roundF, C
+from libs import WorldItems
 from inventory import Inventory, Weapon
 
 class Player:
@@ -111,6 +112,26 @@ class Player:
     def update_total_stats(self):
         self.attack_power = self.attack_power_base + self.attack_power_item
         self.health_max = self.health_max_base + self.health_max_item
+
+    def gain_worldItem(self, modifier):
+        chance = random.random()
+        if chance < modifier[2]:
+            rarity = "c"
+        elif chance < modifier[1]:
+            rarity = "b"
+        elif chance < modifier[0]:
+            rarity = "a"
+        else:
+            return None
+
+        if rarity is not None:
+            item_library = WorldItems()
+            items_to_drop = [getattr(item_library, item_name) for item_name in vars(item_library) if not item_name.startswith('__')]
+            
+            # print(items_to_drop)
+            item_drop = random.choice(items_to_drop)
+            self.inventory.add_item(item_drop)
+            print(f"Get Item: {item_drop.name}")
 
     def equip_item(self, item):
         if isinstance(item, Weapon):
@@ -233,7 +254,11 @@ class Player:
     # Currencies
     def collect_gold(self, object, modifier_gold_chance, modifier_gold_amount):
         if random.random() < modifier_gold_chance:
-            amount_gold = random.randint(10, 20) * modifier_gold_amount
+            if random.random() > 0.5:
+                modifier_evener = random.randint(1, 3)
+            else:
+                modifier_evener = (- random.randint(1, 3))
+            amount_gold = (random.randint(10, 20) * modifier_gold_amount) + modifier_evener
             self.currency_gold += amount_gold
             print(f"\n{self.name} collected {C.yellow(amount_gold)} {C.yellow('Gold')} from {object}!")
 

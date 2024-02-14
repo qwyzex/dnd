@@ -28,6 +28,7 @@ def battle(player):
             player.collect_gold(enemy.name, enemy.modifier_gold_chance, enemy.modifier_gold_amount)
             player.gain_experience(enemy.exp_gain)
             player.reduce_cooldown()
+            player.gain_worldItem(enemy.modifier_item_rarity)
             player.current_room += 1
             if player.is_blocking:
                 player.is_blocking = False
