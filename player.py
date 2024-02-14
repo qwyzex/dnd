@@ -51,17 +51,19 @@ class Player:
         print(f"Health          : {self.current_health}/{self.health_max}")
         print(f"Attack Power    : {self.attack_power}")
         print(f"Gold            : {self.currency_gold}")
+        print(f"Inventory       : {len(self.inventory.items)}/{self.inventory.capacity}")
 
     def statf(self):
         print(f"Name            : {self.name}")
         print(f"Level           : {self.level}")
         print(f"Experience      : {self.experience}/{self.experience_to_next_level}")
-        print(f"Health          : {self.current_health}/{self.health_max}")
-        print(f"Attack Power    : {self.attack_power}")
+        print(f"Health          : {self.current_health}/{self.health_max} ({self.health_max_base} + {self.health_max_item})")
+        print(f"Attack Power    : {self.attack_power} ({self.attack_power_base} + {self.attack_power_item})")
         print(f"Block Strength  : {self.block_strength}")
         print(f"Heal Amount     : {self.heal_amount}, {self.heal_cooldown}")
         print(f"Heavy Attack    : {self.heavy_attack_mod}, {self.heavy_attack_cooldown}")
         print(f"Gold            : {self.currency_gold}")
+        print(f"Inventory       : {len(self.inventory.items)}/{self.inventory.capacity}")
 
     def gain_experience(self, amount):
         self.experience += amount
@@ -82,7 +84,7 @@ class Player:
         self.current_health += health_increase
 
     def increase_attack_power(self):
-        base_attack_increase = 3
+        base_attack_increase = 1
         if self.level % 2 == 0:
             attack_increase = max(base_attack_increase + (self.level // 2) - 2, 1)
         else:
@@ -108,23 +110,25 @@ class Player:
     # INVENTORY
     def update_total_stats(self):
         self.attack_power = self.attack_power_base + self.attack_power_item
-        self.health_max = self.health_max_base + self.health_max_base
+        self.health_max = self.health_max_base + self.health_max_item
 
     def equip_item(self, item):
         if isinstance(item, Weapon):
             if self.equipped_items["weapon"] is not None:
                 self.unequip_item(self.equipped_items["weapon"])
             self.equipped_items["weapon"] = item
-            self.attack_power_item += item.damage
+            self.attack_power_item = item.damage
             self.update_total_stats()
-            print(f"Equipped {item.name}. Attack power increased by {item.damage}.")
+            item.equipped = True
+            print((f"   {C.green("Equipped")} {item.name}. Attack power increased by {C.green(item.damage)}."))
         elif isinstance(item, Armor):
             if self.equipped_items["armor"] is not None:
                 self.unequip_item(self.equipped_items["armor"])
             self.equipped_items["armor"] = item
-            self.health_max_item += item.defense
+            self.health_max_item = item.defense
             self.update_total_stats()
-            print(f"Equipped {item.name}. Max health increased by {item.defense}.")
+            item.equipped = True
+            print((f"   {C.green("Equipped")} {item.name}. Max health increased by {C.green(item.defense)}."))
 
     def unequip_item(self, item):
         if isinstance(item, Weapon):
@@ -132,22 +136,61 @@ class Player:
                 self.attack_power_item -= item.damage
                 self.equipped_items["weapon"] = None
                 self.update_total_stats()
-                print(f"Unequipped {item.name}. Attack power decreased by {item.damage}.")
+                item.equipped = False
+                print((f"   {C.yellow("Unequipped")} {item.name}. Attack power decreased by {C.red(item.damage)}."))
         elif isinstance(item, Armor):
             if self.equipped_items["armor"] == item:
                 self.health_max_item -= item.defense
                 self.equipped_items["armor"] = None
                 self.update_total_stats()
-                print(f"Unequipped {item.name}. Max health decreased by {item.defense}.")
+                item.equipped = False
+                print((f"   {C.yellow("Unequipped")} {item.name}. Max health decreased by {C.red(item.defense)}."))
 
     def display_inventory(self):
-        print("Equipped Items:")
-        print(f"Weapon  : {C.cyan(self.equipped_items["weapon"].name) if self.equipped_items["weapon"] is not None else C.yellow("No weapon equipped.")}")
-        print(f"Armor   : {C.cyan(self.equipped_items["armor"].name) if self.equipped_items["armor"] is not None else C.yellow("No armor wore.")}")
+        print("   Equipped Items:")
+        print(f"   Weapon  : {C.cyan(self.equipped_items["weapon"].name) if self.equipped_items["weapon"] is not None else C.yellow("No weapon equipped.")}")
+        print(f"   Armor   : {C.cyan(self.equipped_items["armor"].name) if self.equipped_items["armor"] is not None else C.yellow("No armor wore.")}")
 
-        print(f"\nInventory ({len(self.inventory.items)}/{self.inventory.capacity}) :")
-        for item in self.inventory.items:
-            print(f"- {C.cyan(item.name)}: {item.description}")
+        print(f"\n   Inventory ({len(self.inventory.items)}/{self.inventory.capacity}) :")
+        if not self.inventory.items:
+            print(C.yellow("\n   Your inventory is empty"))
+        else:
+            def elabel(index):
+                equipped_label = C.green(" (equipped) ") if self.inventory.items[index - 1].equipped else ""
+                return equipped_label
+            for i, item in enumerate(self.inventory.items, start=1):
+                print(f"   [{i}] {C.cyan(item.name)}{elabel(i)}: {item.description}")
+
+            print(f"\n   {C.red("[")}d - Drop Item{C.red("]")} {C.green("[")}e/u - Equip, Unequip/Use Item{C.green("]")} {C.yellow("[")}q - Quit Inventory{C.yellow("]")}")
+            print("   Select an item and what action to perform: ")
+
+            while True:
+                selection_action = input("\ni> ").strip().lower()
+                print("")
+                if selection_action == "q":
+                    break
+
+                try:
+                    item_index, action = selection_action.split(", ")
+                    item_index = int(item_index) - 1
+                    if (item_index) < 0 or item_index >= len(self.inventory.items):
+                        print(C.yellow("   Invalid item index. Please choose again."))
+                        continue
+                except ValueError:
+                    print(C.yellow("   Invalid input format. Please enter the prompt using the format n, a (e.g.: 1, d)!"))
+                    continue
+
+                if action == "d":
+                    self.inventory.remove_item(self.inventory.items[item_index])
+                    break
+                if action == "e" or action == "u":
+                    if self.inventory.items[item_index].equipped:
+                        self.unequip_item(self.inventory.items[item_index])
+                    else:
+                        self.equip_item(self.inventory.items[item_index])
+                    continue
+                else:
+                    print(C.yellow("\n   Invalid action, please choose again."))
 
     # Combat Abilities
     def attack(self, enemy):
