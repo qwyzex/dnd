@@ -2,16 +2,16 @@ import random
 from utils import roundF, C
 
 class Player:
-    def __init__(self, name, max_health, attack_power):
+    def __init__(self, name, level, health, attack_power, gold):
         self.name = name
-        # Basic Stat
-        self.max_health = max_health
-        self.current_health = max_health
-        self.attack_power = attack_power
         # Level and Experience
-        self.level = 1
-        self.experience = 0
+        self.level = level[0]
+        self.experience = level[1]
         self.experience_to_next_level = 62 + (38 * round(self.level * 0.6))
+        # Basic Stat
+        self.max_health = health[0]
+        self.current_health = health[1]
+        self.attack_power = attack_power
         # Attack Blocking
         self.block_strength = round(4 + (self.level * 0.5))  # Amount of damage reduced when blocking
         self.is_blocking = False
@@ -21,10 +21,10 @@ class Player:
         self.heal_cooldown = 0  # Turns remaining until healing ability is available again
         # Heavy Attack
         self.heavy_attack_mod = roundF(min(1.1 * 1.0 + (0.1 * self.level), 2.0))  #Heavy Attack Increase Modifier
-        self.heavy_attack_cooldown_duration = 5  # Cooldown period for heavy attack ability (in turns)
+        self.heavy_attack_cooldown_duration = 5 if self.level < 10 else 4 if self.level >= 10 and self.level < 20 else 3 #if self.level >= 20  # Cooldown period for heavy attack ability (in turns)
         self.heavy_attack_cooldown = 0  # Turns remaining until heavy attack ability is available again
         # Currencies
-        self.currency_gold = 0
+        self.currency_gold = gold
         # DUNGEONS
         self.current_room = 1
 

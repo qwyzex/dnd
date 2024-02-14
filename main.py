@@ -1,4 +1,5 @@
 import time
+import json
 from utils import C, clears, title_wide
 from player import Player
 from dungeon import Dungeon
@@ -11,17 +12,39 @@ def main():
     clears()
     title_wide()
 
-    # Initialize player
-    print("\nCreating new Character...")
-    player_name = ""
-    while True:
-        player_name = input("Enter your player name: ").strip().upper()
-        if not player_name == "":
-            break
-        elif player_name == "":
-            player_name = "Warrior"
-            break
-    player = Player(player_name, max_health=100, attack_power=10)  # Adjust initial stats as needed
+    def save_game(player):
+        player_data = {
+            "name": player.name,
+            "level": player.level,
+            "experience": player.experience,
+            "max_health": player.max_health,
+            "current_health": player.current_health,
+            "attack_power": player.attack_power,
+            "currency_gold": player.currency_gold
+        }
+
+        with open("dnd_save_file.json", "w") as file:
+            json.dump(player_data, file)
+
+    try:
+        with open("dnd_save_file.json", "r") as file:
+            # return json.load(file)
+            x = json.load(file)
+            player = Player(x["name"], [x["level"], x["experience"]], [x["max_health"], x["current_health"]], x["attack_power"], x["currency_gold"])
+    except FileNotFoundError:
+        print("N E W   G A M E")
+
+        # Initialize player
+        print("\nCreating new Character...")
+        player_name = ""
+        while True:
+            player_name = input("Enter your player name: ").strip().upper()
+            if not player_name == "":
+                break
+            elif player_name == "":
+                player_name = "Warrior"
+                break
+        player = Player(player_name, level=[1, 0], health=[100, 100], attack_power=10, gold=0)  # Adjust initial stats as needed
 
     welcome(player)
 
@@ -49,6 +72,7 @@ def main():
             quit_confirmation = input(f"!> Are you sure you want to exit the game? [Enter, yes/no] ").strip().lower()
             if quit_confirmation == "yes" or quit_confirmation == "y" or quit_confirmation == "":
                 print("\n   Exiting the game. Goodbye!\n")
+                save_game(player)
                 break
             elif quit_confirmation == "no" or quit_confirmation == "n" :
                 print("\n   Cancelled.")
