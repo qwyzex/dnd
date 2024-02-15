@@ -5,9 +5,17 @@ from inventory import Inventory, Weapon
 
 class Player:
     # Load Instantiation
-    # player = Player(data["name"], [data["level"], data["experience"]], [data["health_max_base"], data["current_health"]], )
+    #                                         Current experience for the next level        Currently equipped item state     Core stat of max health, increased by leveling up          Core stat of AP, increased by leveling up                        Player's gold left
+    #                                                            |                                       |                          |                                                                          |                                                  |
+    #                  Player's name    Current level           |      Inventory object as-is           |                          |    Item stat increasing total max health    Current health state         |    Item stat increasing total max health         |
+    #                      /--|--\        /--|---\       /-----|-----\        /----|-----\       /-----|--------\         /-------|-------\         /-------|------\         /----|--------\          /------|-----------\       /--------|---------\        /--|----------\
+    #                     |      |       |       |      |            |       |           |      |               |        |                |        |               |        |              |         |                   |      |                   |       |              |
+    # player = Player(data["name"], [data["level"], data["experience"]], data["inventory"], data["equipped_items"], [data["health_max_base"], data["health_max_item"], data["current_health"]], [data["attack_power_base"], data["attack_power_item"]], data["currency_gold"])
+    #                 \_________/   \____[0]____________[1]__________/   \______________/   \___________________/   \____[0]______________________[1]______________________[2]______________/   \____[0]________________________[1]_________________/   \__________________/
+    #                      |                         |                          |                     |                                             |                                                                    |                                       |
+    #                    Name             Level array, length 2             Inventory          Equipped Items                           Health array, length 3                                               Attack power array, length 2                      Gold
     #
-    #
+     #                        [2]                                [3]       [2]
     def __init__(self, name, level, inventory, equipped_items, health, attack_power, gold):
         self.name = name
         # Level and Experience
@@ -29,16 +37,16 @@ class Player:
         self.attack_power_item = attack_power[1]
         self.attack_power = self.attack_power_base + self. attack_power_item
         # Attack Blocking
-        self.block_strength = round(4 + (self.level * 0.5))  # Amount of damage reduced when blocking
+        self.block_strength = round(4 + (self.level * 0.5))
         self.is_blocking = False
         # Healing Potion
-        self.heal_amount = round(12 + (self.level * 1.2))  # Amount of health restored when healing
-        self.heal_cooldown_duration = 3  # Cooldown period for healing ability (in turns)
-        self.heal_cooldown = 0  # Turns remaining until healing ability is available again
+        self.heal_amount = round(12 + (self.level * 1.2))
+        self.heal_cooldown_duration = 3
+        self.heal_cooldown = 0
         # Heavy Attack
-        self.heavy_attack_mod = roundF(min(1.1 * 1.0 + (0.1 * self.level), 2.0))  #Heavy Attack Increase Modifier
-        self.heavy_attack_cooldown_duration = 5 if self.level < 10 else 4 if self.level >= 10 and self.level < 20 else 3 #if self.level >= 20  # Cooldown period for heavy attack ability (in turns)
-        self.heavy_attack_cooldown = 0  # Turns remaining until heavy attack ability is available again
+        self.heavy_attack_mod = roundF(min(1.1 * 1.0 + (0.1 * self.level), 2.0))
+        self.heavy_attack_cooldown_duration = 5 if self.level < 10 else 4 if self.level >= 10 and self.level < 20 else 3
+        self.heavy_attack_cooldown = 0
         # Currencies
         self.currency_gold = gold
         # DUNGEONS
@@ -127,7 +135,7 @@ class Player:
         if rarity is not None:
             item_library = WorldItems()
             items_to_drop = [getattr(item_library, item_name) for item_name in vars(item_library) if not item_name.startswith('__')]
-            
+
             # print(items_to_drop)
             item_drop = random.choice(items_to_drop)
             self.inventory.add_item(item_drop)

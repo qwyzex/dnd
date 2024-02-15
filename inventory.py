@@ -1,12 +1,12 @@
 from utils import C
 
-# stdscr = curses.initscr()
-
+# Base item class
 class Item:
     def __init__(self, name, description):
         self.name = name
         self.description = description
 
+# Item type weapon
 class Weapon(Item):
     def __init__(self, name, description, damage, rarity):
         super().__init__(name, description)
@@ -14,6 +14,7 @@ class Weapon(Item):
         self.equipped = False
         self.rarity = rarity
 
+# Item type armor
 class Armor(Item):
     def __init__(self, name, description, defense, rarity):
         super().__init__(name, description)
@@ -21,6 +22,7 @@ class Armor(Item):
         self.equipped = False
         self.rarity = rarity
 
+# Main inventory class
 class Inventory:
     def __init__(self, capacity):
         self.capacity = capacity
@@ -39,11 +41,6 @@ class Inventory:
             print(f"Removed {item.name} from inventory.")
         else:
             print(f"{item.name} not found in inventory.")
-
-    def display(self):
-        print("Inventory:")
-        for item in self.items:
-            print(f"- {C.cyan(item.name)}: {item.description}")
 
 # class InventoryScreen:
 

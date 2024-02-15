@@ -13,6 +13,7 @@ def main():
     clears()
     title_wide()
 
+    # Save player data in local json file
     def save_game(player):
         player_data = {
             "name": player.name,
@@ -29,15 +30,15 @@ def main():
         with open("dnd_save_file.json", "w") as file:
             json.dump(player_data, file)
 
+    # Check if there is an existing save file
     try:
         with open("dnd_save_file.json", "r") as file:
-            # return json.load(file)
-            x = json.load(file)
-            player = Player(x["name"], [x["level"], x["experience"]], x["inventory"], x["equipped_items"], [x["health_max_base"], x["health_max_item"], x["current_health"]], [x["attack_power_base"], x["attack_power_item"]], x["currency_gold"])
+            p = json.load(file)
+            player = Player(p["name"], [p["level"], p["epperience"]], p["inventory"], p["equipped_items"], [p["health_map_base"], p["health_map_item"], p["current_health"]], [p["attack_power_base"], p["attack_power_item"]], p["currency_gold"])
     except FileNotFoundError:
         print("N E W   G A M E")
 
-        # Initialize player
+        # Initialize new player
         print("\nCreating new Character...")
         player_name = ""
         while True:
@@ -47,16 +48,20 @@ def main():
             elif player_name == "":
                 player_name = "Warrior"
                 break
+
+        # New player object instantiation
         player = Player(player_name, level=[1, 0], inventory=Inventory(capacity=20), equipped_items={"weapon": None, "armor": None}, health=[100, 0, 100], attack_power=[4, 0], gold=0)  # Adjust initial stats as needed
-        player.inventory.items.append(Weapon("Wooden Sword", "Fragile short sword made of Alp wood.", 4, "a"))
+        player.inventory.items.append(Weapon("Wooden Sword", "Fragile short sword made of Alp wood.", 4, "a")) # Beginner sword
 
     welcome(player)
 
     # Main game loop
     while True:
+        # Main player input
         command = input("\n@> ").strip().lower()
         print("")
 
+        # Commands condition
         if command == "help":
             print("Available commands:")
             print(" - stat: Display player's current stats")
@@ -79,6 +84,7 @@ def main():
             quit_confirmation = input(f"!> Are you sure you want to exit the game? [Enter, yes/no] ").strip().lower()
             if quit_confirmation == "yes" or quit_confirmation == "y" or quit_confirmation == "":
                 print("\n   Exiting the game. Goodbye!\n")
+                # uncomment the line below to save player data
                 #save_game(player)
                 break
             elif quit_confirmation == "no" or quit_confirmation == "n" :
@@ -88,7 +94,7 @@ def main():
 
 # Dungeon System
 def dungeon_explore(player):
-    # Create a dungeon with 10 rooms
+    # Create a dungeon with 11 rooms
     dungeon = Dungeon(11, player)
 
     # Explore each room in the dungeon
@@ -99,6 +105,7 @@ def dungeon_explore(player):
             interroominput = input(f"\n@> Press {C.cyan('Enter')} to explore the next room or see stat... ").strip().lower()
         else:
             interroominput = ""
+        # Give option to see current stat inbetween rooms
         if player.current_room > 1 and interroominput == "stat" or interroominput == "statfull":
             player.statf()
             input(f"\n@> Press {C.cyan('Enter')} to explore the next room... ")
@@ -106,6 +113,7 @@ def dungeon_explore(player):
         else:
             dungeon.explore_room()
 
+        # Player dies and get rescued by the village guard
         if player.current_health <= 0:
             player.current_room = 1
             input(C.red("Returning to main village..."))

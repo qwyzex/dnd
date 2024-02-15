@@ -2,6 +2,7 @@ import random
 from inventory import Item, Weapon, Armor
 
 # ITEMS
+# World items are items that are found in the wilds without buying, but can still be selled for gold
 class WorldItems:
     def __init__(self):
         # WEAPON
@@ -15,12 +16,14 @@ class WorldItems:
         self.b_tight_robe = Armor("Tight Robe", "A good clothes is a good clothes", 7, "b")
         self.c_knights_chainmail = Armor("Knight's Chainmail", "Strong chainmail armor used by the Knights", 19, "c")
 
+# EXP gain library for various event
 class XP:
     class ev:
         treasure = 15
 
 # ENEMY
 # ENEMY CLASS-A
+# CLASS-A enemies are weak and found more often in the lower levels of the dungeon
 class EnemyA:
     def __init__(self, name, health, attack_power, exp_gain, player, modifier, item_modifier):
         self.name = name
@@ -49,6 +52,7 @@ class EnemyA:
     def take_damage(self, damage):
         self.health -= damage
 
+# Enemy instantiation data collection
 class BestiaryA:
     def __init__(self, player):
         self.player = player # pass the player param

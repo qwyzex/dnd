@@ -1,8 +1,10 @@
 import colorama
 from colorama import Fore, Style
 
+# Initiate colorama
 colorama.init()
 
+# Welcome title
 def title_wide():
     print("")
     print("[\\][\\][/][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][\\][/][/]")
@@ -24,6 +26,7 @@ def title_wide():
     print("[/][/][\\][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][/][\\][\\]")
     print("")
 
+# Color class
 class C:
     @staticmethod
     def red(text):
@@ -47,9 +50,11 @@ class C:
     def white(text):
         return f"{Fore.WHITE}{text}{Fore.RESET}"
 
+# Clear terminal screen
 def clears():
     print('\033c', end='')
 
+# Round number to 3 digits deep
 def roundF(num):
     rounded_num = round(num, 3)  # Round to 3 decimal places
     last_digit = int(rounded_num * 1000) % 10  # Get the last digit after rounding
