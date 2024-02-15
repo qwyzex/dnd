@@ -23,7 +23,9 @@ class Player:
         self.experience = level[1]
         self.experience_to_next_level = 62 + (38 * round(self.level * 0.6))
         # Inventory
-        self.inventory = inventory
+        self.inventory = Inventory(20)
+        self.inventory_capacity = inventory[0]
+        self.inventory_items = inventory[1]
         self.equipped_items = equipped_items
         # Health Stat
         self.health_max_base = health[0]
@@ -60,7 +62,7 @@ class Player:
         print(f"Health          : {self.current_health}/{self.health_max}")
         print(f"Attack Power    : {self.attack_power}")
         print(f"Gold            : {self.currency_gold}")
-        print(f"Inventory       : {len(self.inventory.items)}/{self.inventory.capacity}")
+        print(f"Inventory       : {len(self.inventory_items)}/{self.inventory_capacity}")
 
     def statf(self):
         print(f"Name            : {self.name}")
@@ -72,7 +74,7 @@ class Player:
         print(f"Heal Amount     : {self.heal_amount}, {self.heal_cooldown}")
         print(f"Heavy Attack    : {self.heavy_attack_mod}, {self.heavy_attack_cooldown}")
         print(f"Gold            : {self.currency_gold}")
-        print(f"Inventory       : {len(self.inventory.items)}/{self.inventory.capacity}")
+        print(f"Inventory       : {len(self.inventory_items)}/{self.inventory_capacity}")
 
     def gain_experience(self, amount):
         self.experience += amount
@@ -160,8 +162,11 @@ class Player:
             print((f"   {C.green("Equipped")} {item.name}. Max health increased by {C.green(item.defense)}."))
 
     def unequip_item(self, item):
+        print("x1")
         if isinstance(item, Weapon):
+            print("x2")
             if self.equipped_items["weapon"] == item:
+                print("x3")
                 self.attack_power_item -= item.damage
                 self.equipped_items["weapon"] = None
                 self.update_total_stats()
@@ -180,14 +185,14 @@ class Player:
         print(f"   Weapon  : {C.cyan(self.equipped_items["weapon"].name) if self.equipped_items["weapon"] is not None else C.yellow("No weapon equipped.")}")
         print(f"   Armor   : {C.cyan(self.equipped_items["armor"].name) if self.equipped_items["armor"] is not None else C.yellow("No armor wore.")}")
 
-        print(f"\n   Inventory ({len(self.inventory.items)}/{self.inventory.capacity}) :")
-        if not self.inventory.items:
+        print(f"\n   Inventory ({len(self.inventory_items)}/{self.inventory_capacity}) :")
+        if not self.inventory_items:
             print(C.yellow("\n   Your inventory is empty"))
         else:
             def elabel(index):
-                equipped_label = C.green(" (equipped) ") if self.inventory.items[index - 1].equipped else ""
+                equipped_label = C.green(" (equipped) ") if self.inventory_items[index - 1].equipped else ""
                 return equipped_label
-            for i, item in enumerate(self.inventory.items, start=1):
+            for i, item in enumerate(self.inventory_items, start=1):
                 print(f"   [{i}] {C.cyan(item.name)}{elabel(i)}: {item.description}")
 
             print(f"\n   {C.red("[")}d - Drop Item{C.red("]")} {C.green("[")}e/u - Equip, Unequip/Use Item{C.green("]")} {C.yellow("[")}q - Quit Inventory{C.yellow("]")}")
@@ -202,7 +207,7 @@ class Player:
                 try:
                     item_index, action = selection_action.split(", ")
                     item_index = int(item_index) - 1
-                    if (item_index) < 0 or item_index >= len(self.inventory.items):
+                    if (item_index) < 0 or item_index >= len(self.inventory_items):
                         print(C.yellow("   Invalid item index. Please choose again."))
                         continue
                 except ValueError:
@@ -210,13 +215,15 @@ class Player:
                     continue
 
                 if action == "d":
-                    self.inventory.remove_item(self.inventory.items[item_index])
+                    self.inventory.remove_item(self.inventory_items[item_index])
                     break
                 if action == "e" or action == "u":
-                    if self.inventory.items[item_index].equipped:
-                        self.unequip_item(self.inventory.items[item_index])
+                    if self.inventory_items[item_index].equipped:
+                        print("s1")
+                        self.unequip_item(self.inventory_items[item_index])
                     else:
-                        self.equip_item(self.inventory.items[item_index])
+                        print("s2")
+                        self.equip_item(self.inventory_items[item_index])
                     continue
                 else:
                     print(C.yellow("\n   Invalid action, please choose again."))

@@ -6,15 +6,15 @@ from inventory import Item, Weapon, Armor
 class WorldItems:
     def __init__(self):
         # WEAPON
-        self.a_stone_sword = Weapon("Stone Sword", "Pretty sharp short stone sword", 5, "a")
-        self.a_metal_bar = Weapon("Metal Bar", "It's a bar, metal one.", 6, "a")
-        self.b_steel_sword = Weapon("Steel Sword", "Fine steel sword", 12, "b")
-        self.c_harakis_katana = Weapon("Haraki's Katana", "Lightweight blade made by the greatest smith in Asia", 25, "c")
+        self.a_stone_sword = Weapon("Stone Sword", "Pretty sharp short stone sword", 5, "a", False)
+        self.a_metal_bar = Weapon("Metal Bar", "It's a bar, metal one.", 6, "a", False)
+        self.b_steel_sword = Weapon("Steel Sword", "Fine steel sword", 12, "b", False)
+        self.c_harakis_katana = Weapon("Haraki's Katana", "Lightweight blade made by the greatest smith in Asia", 25, "c", False)
         # ARMOR
-        self.a_rugged_robe = Armor("Rugged Robe", "This is not an armor, but still usable...", 2, "a")
-        self.a_cardboard_clothes = Armor("Cardboard Clothes", "Thin cardboard armor made by cosplayers", 3, "a")
-        self.b_tight_robe = Armor("Tight Robe", "A good clothes is a good clothes", 7, "b")
-        self.c_knights_chainmail = Armor("Knight's Chainmail", "Strong chainmail armor used by the Knights", 19, "c")
+        self.a_rugged_robe = Armor("Rugged Robe", "This is not an armor, but still usable...", 2, "a", False)
+        self.a_cardboard_clothes = Armor("Cardboard Clothes", "Thin cardboard armor made by cosplayers", 3, "a", False)
+        self.b_tight_robe = Armor("Tight Robe", "A good clothes is a good clothes", 7, "b", False)
+        self.c_knights_chainmail = Armor("Knight's Chainmail", "Strong chainmail armor used by the Knights", 19, "c", False)
 
 # EXP gain library for various event
 class XP:

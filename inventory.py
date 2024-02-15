@@ -3,24 +3,54 @@ from utils import C
 # Base item class
 class Item:
     def __init__(self, name, description):
+        self.type = "ordinary"
         self.name = name
         self.description = description
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "type": self.type
+        }
+
 # Item type weapon
 class Weapon(Item):
-    def __init__(self, name, description, damage, rarity):
+    def __init__(self, name, description, damage, rarity, equipped):
         super().__init__(name, description)
+        self.type = "weapon"
         self.damage = damage
-        self.equipped = False
+        self.equipped = equipped
         self.rarity = rarity
+
+    def to_json(self):
+        return {
+            "name" : self.name,
+            "description": self.description,
+            "type" : self.type,
+            "damage" : self.damage,
+            "equipped" : self.equipped,
+            "rarity" : self.rarity
+        }
 
 # Item type armor
 class Armor(Item):
-    def __init__(self, name, description, defense, rarity):
+    def __init__(self, name, description, defense, rarity, equipped):
         super().__init__(name, description)
+        self.type = "armor"
         self.defense = defense
-        self.equipped = False
+        self.equipped = equipped
         self.rarity = rarity
+
+    def to_json(self):
+        return {
+            "name" : self.name,
+            "description": self.description,
+            "type" : self.type,
+            "defense" : self.defense,
+            "equipped" : self.equipped,
+            "rarity" : self.rarity
+        }
 
 # Main inventory class
 class Inventory:
