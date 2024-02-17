@@ -119,12 +119,12 @@ def main():
             player.stat()
         elif command == "statfull" or command == "statf":
             player.statf()
-        elif command == "bag" or command == "inventory":
-            player.display_inventory()
+        elif command == "bag" or command == "inventory" or command == "i" or command == "char" or command =="Character":
+            player.display_inventory(welcome)
         elif command == "rest":
             player.rest(player.health_max)
         elif command == "explore" or command == "expl":
-            dungeon_explore(player)
+            dungeon_explore(playe)
         elif command == "save" or command == "sv":
             save_game(player)
         elif command == "quit" or command == "exit" or command == "logout":
