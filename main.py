@@ -59,33 +59,7 @@ def main():
         with open("dnd_save_file.json", "w") as file:
             json.dump(player_data, file)
 
-    # Check if there is an existing save file
-    try:
-        with open("dnd_save_file.json", "r") as file:
-            p = json.load(file)
-            inventory_items = []
-            for item_data in p["inventory_items"]:
-                if item_data["type"] == "weapon":
-                    item = Weapon(item_data["name"], item_data["description"], item_data["damage"], item_data["rarity"], item_data["equipped"])
-                elif item_data["type"] == "armor":
-                    item = Armor(item_data["name"], item_data["description"], item_data["defense"], item_data["rarity"], item_data["equipped"])
-                else:
-                    item = Item(item_data["name"], item_data["description"])
-                inventory_items.append(item)
-
-            player = Player(p["name"], [p["level"], p["experience"]], Inventory(p["inventory_capacity"], inventory_items), {"weapon": None, "armor": None}, [p["health_max_base"], p["health_max_item"], p["current_health"]], [p["attack_power_base"], p["attack_power_item"]], p["currency_gold"])
-            if p["equipped_items"]["weapon"] is not None:
-                pew_index = p["equipped_items"]["weapon"]
-                player.equip_item(player.inventory.items[pew_index])
-                # player.equipped_items[0] = player.inventory.items[pew_index]
-                # equipped_item_weapon = Weapon(pew["name"], pew["description"], pew["damage"], pew["rarity"], pew["equipped"])
-            if p["equipped_items"]["weapon"] is not None:
-                pea_index = p["equipped_items"]["weapon"]
-                player.equip_item(player.inventory.items[pea_index])
-                # player.equipped_items[1] = player.inventory.items[pea_index]
-                # equipped_item_armor = Armor(pea["name"], pea["description"], pea["defense"], pea["rarity"], pea["equipped"])
-    except FileNotFoundError:
-        # Initialize new player
+    def new_game():
         print("Creating new Character...")
         player_name = ""
         while True:
@@ -99,6 +73,45 @@ def main():
         # New player object instantiation
         player = Player(player_name, level=[1, 0], inventory=Inventory(20, [Weapon("Wooden Sword", "Fragile short sword made of Alp wood.", 4, "a", False)]), equipped_items={"weapon": None, "armor": None}, health=[100, 0, 100], attack_power=[4, 0], gold=0)  # Adjust initial stats as needed
 
+    # Check if there is an existing save file
+    try:
+        with open("dnd_save_file.json", "r") as file:
+            p = json.load(file)
+
+            print(f"Character found: {p["name"]}, level {p["level"]}")
+            continue_game_input = input(f"Do you want to continue as {C.cyan(p["name"])} or create new character? (y/n)")
+
+            if continue_game_input == "" or continue_game_input == "y" or continue_game_input == "yes":
+                inventory_items = []
+                for item_data in p["inventory_items"]:
+                    if item_data["type"] == "weapon":
+                        item = Weapon(item_data["name"], item_data["description"], item_data["damage"], item_data["rarity"], item_data["equipped"])
+                    elif item_data["type"] == "armor":
+                        item = Armor(item_data["name"], item_data["description"], item_data["defense"], item_data["rarity"], item_data["equipped"])
+                    else:
+                        item = Item(item_data["name"], item_data["description"])
+                    inventory_items.append(item)
+
+                player = Player(p["name"], [p["level"], p["experience"]], Inventory(p["inventory_capacity"], inventory_items), {"weapon": None, "armor": None}, [p["health_max_base"], p["health_max_item"], p["current_health"]], [p["attack_power_base"], p["attack_power_item"]], p["currency_gold"])
+                if p["equipped_items"]["weapon"] is not None:
+                    pew_index = p["equipped_items"]["weapon"]
+                    player.equip_item(player.inventory.items[pew_index])
+                    # player.equipped_items[0] = player.inventory.items[pew_index]
+                    # equipped_item_weapon = Weapon(pew["name"], pew["description"], pew["damage"], pew["rarity"], pew["equipped"])
+                if p["equipped_items"]["weapon"] is not None:
+                    pea_index = p["equipped_items"]["weapon"]
+                    player.equip_item(player.inventory.items[pea_index])
+                    # player.equipped_items[1] = player.inventory.items[pea_index]
+                    # equipped_item_armor = Armor(pea["name"], pea["description"], pea["defense"], pea["rarity"], pea["equipped"])
+            elif continue_game_input == "n" or continue_game_input == "no":
+                new_game()
+
+
+    except FileNotFoundError:
+        # Initialize new player
+        new_game()
+
+    clears()
     welcome(player)
     print("\nMAIN VILLAGE")
 
