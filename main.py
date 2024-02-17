@@ -31,12 +31,15 @@ def main():
             # player_equipped_item_weapon = player.equipped_items["weapon"].to_json()
         if player.equipped_items["armor"] is not None:
             for i, item in enumerate(player.inventory.items, start=0):
-                if item == player.equipped_items[armor]:
+                if item == player.equipped_items["armor"]:
                     player_equipped_item_armor_index = i
                     break
-            # player_equipped_item_armor = player.equipped_items["armor"].to_json()
+                    # player_equipped_item_armor = player.equipped_items["armor"].to_json()
 
-        player_equipped_items = [player_equipped_item_weapon_index, player_equipped_item_armor_index]
+        player_equipped_items = {
+            "weapon": player_equipped_item_weapon_index,
+            "armor": player_equipped_item_armor_index
+        }
 
         player_data = {
             "name": player.name,
@@ -82,10 +85,8 @@ def main():
                 # player.equipped_items[1] = player.inventory.items[pea_index]
                 # equipped_item_armor = Armor(pea["name"], pea["description"], pea["defense"], pea["rarity"], pea["equipped"])
     except FileNotFoundError:
-        print("N E W   G A M E")
-
         # Initialize new player
-        print("\nCreating new Character...")
+        print("Creating new Character...")
         player_name = ""
         while True:
             player_name = input("Enter your player name: ").strip().upper()
@@ -99,6 +100,7 @@ def main():
         player = Player(player_name, level=[1, 0], inventory=Inventory(20, [Weapon("Wooden Sword", "Fragile short sword made of Alp wood.", 4, "a", False)]), equipped_items={"weapon": None, "armor": None}, health=[100, 0, 100], attack_power=[4, 0], gold=0)  # Adjust initial stats as needed
 
     welcome(player)
+    print("\nMAIN VILLAGE")
 
     # Main game loop
     while True:
@@ -124,7 +126,7 @@ def main():
         elif command == "rest":
             player.rest(player.health_max)
         elif command == "explore" or command == "expl":
-            dungeon_explore(playe)
+            dungeon_explore(player)
         elif command == "save" or command == "sv":
             save_game(player)
         elif command == "quit" or command == "exit" or command == "logout":
@@ -185,7 +187,7 @@ def dungeon_explore(player):
             print(">> Exiting the dungeon. Goodbye!")
             time.sleep(2)
             clears()
-            welcome(player)
+            print("MAIN VILLAGE")
             return False
         else:
             print(C.yellow("\n   Invalid input. Please choose between the options."))

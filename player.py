@@ -143,8 +143,8 @@ class Player:
 
             # print(items_to_drop)
             item_drop = random.choice(items_to_drop)
-            self.inventory.add_item(item_drop)
             print(f"Get Item: {item_drop.name}")
+            self.inventory.add_item(item_drop)
 
     def equip_item(self, item):
         if isinstance(item, Weapon):
@@ -197,10 +197,10 @@ class Player:
                 print(C.yellow("\n   Your inventory is empty"))
             else:
                 def elabel(index):
-                    equipped_label = C.green(" (equipped) ") if self.inventory.items[index - 1].equipped else ""
+                    equipped_label = C.green(" (equipped) ") if self.inventory.items[index].equipped else ""
                     return equipped_label
-                for i, item in enumerate(self.inventory.items, start=1):
-                    print(f"   [{i}] {C.cyan(item.name)}{elabel(i)}: {item.description}")
+                for i, item in enumerate(self.inventory.items, start=0):
+                    print(f"   [{i + 1}] {C.cyan(item.name)}{elabel(i)}\n        └ {item.description}")
 
                 print(f"\n   {C.red("[")}d - Drop Item{C.red("]")} {C.green("[")}e/u - Equip, Unequip/Use Item{C.green("]")} {C.yellow("[")}q - Quit Inventory{C.yellow("]")}")
                 print("   Select an item and what action to perform: ")
@@ -211,30 +211,54 @@ class Player:
             print("")
             if selection_action == "q":
                 clears()
-                welcome()
+                print("MAIN VILLAGE")
                 break
 
             try:
-                item_index, action = selection_action.split(", ")
-                item_index = int(item_index) - 1
-                if (item_index) < 0 or item_index >= len(self.inventory.items):
-                    print(C.yellow("   Invalid item index. Please choose again."))
+                item_indices, action = selection_action.split(" - ")
+                action.strip()
+                item_indices = item_indices.replace("[", "").replace("]", "").split(",")
+                item_indices = [int(index.strip()) for index in item_indices]
+                item_indices.sort(reverse=True)
+
+                invalid_indices = [index for index in item_indices if index < 1 or index > len(self.inventory.items)]
+
+                if invalid_indices:
+                    print(C.yellow("Invalid item indexes. Please choose again."))
                     continue
+
+                # if not isinstance(item_index, list):
+                #     item_index = int(item_index) - 1
+                #     if (item_index) < 0 or item_index >= len(self.inventory.items):
+                #         print(C.yellow("   Invalid item index. Please choose again."))
+                #         continue
+                # elif isinstance(item_index, list):
+                #     items_index = []
+                #     for index in item_index:
+                #         items_index.append(index - 1)
+                #     for index in items_index:
+                #         if index < 0 or index >= len(self.inventory.items):
+                #             print(C.yellow("   Invalid item indexes. Please choose again."))
+
             except ValueError:
                 print(C.yellow("   Invalid input format. Please enter the prompt using the format n, a (e.g.: 1, d)!"))
                 continue
 
             if action == "d":
-                self.inventory.remove_item(self.inventory.items[item_index])
+                for index in item_indices:
+                    self.inventory.remove_item(self.inventory.items[index - 1])
                 display()
-            if action == "e" or action == "u":
-                if self.inventory.items[item_index].equipped:
-                    self.unequip_item(self.inventory.items[item_index])
-                    display()
-                else:
-                    self.equip_item(self.inventory.items[item_index])
-                    display()
-                continue
+            elif action == "e" or action == "u":
+                if len(item_indices) == 1:
+                    if self.inventory.items[item_indices].equipped:
+                        self.unequip_item(self.inventory.items[item_indices[0]])
+                        display()
+                    else:
+                        self.equip_item(self.inventory.items[item_indices[0]])
+                        display()
+                    continue
+                elif len(item_indices) > 1:
+                    print("Cannot equip more than one item at a time. Please equipe item one by one!")
             else:
                 print(C.yellow("\n   Invalid action, please choose again."))
 

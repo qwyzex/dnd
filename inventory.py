@@ -61,7 +61,7 @@ class Inventory:
     def add_item(self, item):
         if len(self.items) < self.capacity:
             self.items.append(item)
-            print(f"Added {item.name} to inventory.")
+            print(f"\nAdded {item.name} to inventory.")
         else:
             print("Inventory is full.")
 
