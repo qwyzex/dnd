@@ -16,22 +16,27 @@ def main():
     # Save player data in local json file
     def save_game(player):
         player_inventory = []
-        for player_item in player.inventory_items:
+        for player_item in player.inventory.items:
             item_data = player_item.to_json()
             player_inventory.append(item_data)
 
-        player_equipped_item_weapon = None
-        player_equipped_item_armor = None
+        player_equipped_item_weapon_index = None
+        player_equipped_item_armor_index = None
 
         if player.equipped_items["weapon"] is not None:
-            player_equipped_item_weapon = player.equipped_items["weapon"].to_json()
+            for i, item in enumerate(player.inventory.items, start=0):
+                if item == player.equipped_items["weapon"]:
+                    player_equipped_item_weapon_index = i
+                    break
+            # player_equipped_item_weapon = player.equipped_items["weapon"].to_json()
         if player.equipped_items["armor"] is not None:
-            player_equipped_item_armor = player.equipped_items["armor"].to_json()
+            for i, item in enumerate(player.inventory.items, start=0):
+                if item == player.equipped_items[armor]:
+                    player_equipped_item_armor_index = i
+                    break
+            # player_equipped_item_armor = player.equipped_items["armor"].to_json()
 
-        player_equipped_items = {
-            "weapon": player_equipped_item_weapon,
-            "armor": player_equipped_item_armor
-        }
+        player_equipped_items = [player_equipped_item_weapon_index, player_equipped_item_armor_index]
 
         player_data = {
             "name": player.name,
@@ -42,7 +47,7 @@ def main():
             "current_health": player.current_health,
             "attack_power_base": player.attack_power_base,
             "attack_power_item": player.attack_power_item,
-            "inventory_capacity": player.inventory_capacity,
+            "inventory_capacity": player.inventory.capacity,
             "inventory_items": player_inventory,
             "equipped_items": player_equipped_items,
             "currency_gold": player.currency_gold
@@ -65,17 +70,16 @@ def main():
                     item = Item(item_data["name"], item_data["description"])
                 inventory_items.append(item)
 
-            equipped_item_weapon = None
-            equipped_item_armor = None
-            equipped_items = {"weapon": equipped_item_weapon, "armor": equipped_item_armor}
-
-            player = Player(p["name"], [p["level"], p["experience"]], [p["inventory_capacity"], inventory_items], {"weapon": None, "armor": None}, [p["health_max_base"], p["health_max_item"], p["current_health"]], [p["attack_power_base"], p["attack_power_item"]], p["currency_gold"])
+            player = Player(p["name"], [p["level"], p["experience"]], Inventory(p["inventory_capacity"], inventory_items), {"weapon": None, "armor": None}, [p["health_max_base"], p["health_max_item"], p["current_health"]], [p["attack_power_base"], p["attack_power_item"]], p["currency_gold"])
             if p["equipped_items"]["weapon"] is not None:
-                pew = p["equipped_items"]["weapon"]
-                player.equip_item()
+                pew_index = p["equipped_items"]["weapon"]
+                player.equip_item(player.inventory.items[pew_index])
+                # player.equipped_items[0] = player.inventory.items[pew_index]
                 # equipped_item_weapon = Weapon(pew["name"], pew["description"], pew["damage"], pew["rarity"], pew["equipped"])
-            if p["equipped_items"]["armor"] is not None:
-                pea = p["equipped_items"]["armor"]
+            if p["equipped_items"]["weapon"] is not None:
+                pea_index = p["equipped_items"]["weapon"]
+                player.equip_item(player.inventory.items[pea_index])
+                # player.equipped_items[1] = player.inventory.items[pea_index]
                 # equipped_item_armor = Armor(pea["name"], pea["description"], pea["defense"], pea["rarity"], pea["equipped"])
     except FileNotFoundError:
         print("N E W   G A M E")
@@ -92,7 +96,7 @@ def main():
                 break
 
         # New player object instantiation
-        player = Player(player_name, level=[1, 0], inventory=[20, [Weapon("Wooden Sword", "Fragile short sword made of Alp wood.", 4, "a", False)]], equipped_items={"weapon": None, "armor": None}, health=[100, 0, 100], attack_power=[4, 0], gold=0)  # Adjust initial stats as needed
+        player = Player(player_name, level=[1, 0], inventory=Inventory(20, [Weapon("Wooden Sword", "Fragile short sword made of Alp wood.", 4, "a", False)]), equipped_items={"weapon": None, "armor": None}, health=[100, 0, 100], attack_power=[4, 0], gold=0)  # Adjust initial stats as needed
 
     welcome(player)
 

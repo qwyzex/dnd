@@ -54,9 +54,9 @@ class Armor(Item):
 
 # Main inventory class
 class Inventory:
-    def __init__(self, capacity):
+    def __init__(self, capacity, items):
         self.capacity = capacity
-        self.items = []
+        self.items = items
 
     def add_item(self, item):
         if len(self.items) < self.capacity:

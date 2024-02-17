@@ -1,7 +1,7 @@
 import random
 from utils import roundF, C
 from libs import WorldItems
-from inventory import Inventory, Weapon
+from inventory import Inventory, Weapon, Armor
 
 class Player:
     # Load Instantiation
@@ -15,7 +15,7 @@ class Player:
     #                      |                         |                          |                     |                                             |                                                                    |                                       |
     #                    Name             Level array, length 2             Inventory          Equipped Items                           Health array, length 3                                               Attack power array, length 2                      Gold
     #
-     #                        [2]                                [3]       [2]
+    #                         [2]                                [3]       [2]
     def __init__(self, name, level, inventory, equipped_items, health, attack_power, gold):
         self.name = name
         # Level and Experience
@@ -23,10 +23,11 @@ class Player:
         self.experience = level[1]
         self.experience_to_next_level = 62 + (38 * round(self.level * 0.6))
         # Inventory
-        self.inventory = Inventory(20)
-        self.inventory_capacity = inventory[0]
-        self.inventory_items = inventory[1]
-        self.equipped_items = equipped_items
+        self.inventory = inventory
+        self.equipped_items = {
+            "weapon": equipped_items["weapon"],
+            "armor": equipped_items["armor"]
+        }
         # Health Stat
         self.health_max_base = health[0]
             #self.health_max_item = self.equipped_items["armor"].defense if equipped_items["armor"] is not None else 0
@@ -62,7 +63,7 @@ class Player:
         print(f"Health          : {self.current_health}/{self.health_max}")
         print(f"Attack Power    : {self.attack_power}")
         print(f"Gold            : {self.currency_gold}")
-        print(f"Inventory       : {len(self.inventory_items)}/{self.inventory_capacity}")
+        print(f"Inventory       : {len(self.inventory.items)}/{self.inventory.capacity}")
 
     def statf(self):
         print(f"Name            : {self.name}")
@@ -74,7 +75,7 @@ class Player:
         print(f"Heal Amount     : {self.heal_amount}, {self.heal_cooldown}")
         print(f"Heavy Attack    : {self.heavy_attack_mod}, {self.heavy_attack_cooldown}")
         print(f"Gold            : {self.currency_gold}")
-        print(f"Inventory       : {len(self.inventory_items)}/{self.inventory_capacity}")
+        print(f"Inventory       : {len(self.inventory.items)}/{self.inventory.capacity}")
 
     def gain_experience(self, amount):
         self.experience += amount
@@ -85,6 +86,10 @@ class Player:
             print(f"\n{C.cyan(self.name)} gain {C.magenta(amount)} {C.magenta('EXP')}!\nEXP need to next level: {self.experience}/{self.experience_to_next_level}")
 
     # LEVEL UP Constants
+    def update_total_stats(self):
+        self.attack_power = self.attack_power_base + self.attack_power_item
+        self.health_max = self.health_max_base + self.health_max_item
+
     def increase_max_health(self):
         base_health_increase = 5
         if self.level % 2 == 0:
@@ -110,6 +115,7 @@ class Player:
         # Health and Power
         self.increase_max_health()
         self.increase_attack_power()
+        self.update_total_stats()
         # Level-relative upgrade
         self.block_strength = round(4 + (self.level * 0.5))
         self.heal_amount = round(12 + (self.level * 1.2))
@@ -119,10 +125,6 @@ class Player:
             self.heavy_attack_cooldown_duration -= 1
 
     # INVENTORY
-    def update_total_stats(self):
-        self.attack_power = self.attack_power_base + self.attack_power_item
-        self.health_max = self.health_max_base + self.health_max_item
-
     def gain_worldItem(self, modifier):
         chance = random.random()
         if chance < modifier[2]:
@@ -137,6 +139,7 @@ class Player:
         if rarity is not None:
             item_library = WorldItems()
             items_to_drop = [getattr(item_library, item_name) for item_name in vars(item_library) if not item_name.startswith('__')]
+            items_to_drop = [item for item in items_to_drop if item.rarity == rarity]
 
             # print(items_to_drop)
             item_drop = random.choice(items_to_drop)
@@ -162,11 +165,8 @@ class Player:
             print((f"   {C.green("Equipped")} {item.name}. Max health increased by {C.green(item.defense)}."))
 
     def unequip_item(self, item):
-        print("x1")
         if isinstance(item, Weapon):
-            print("x2")
             if self.equipped_items["weapon"] == item:
-                print("x3")
                 self.attack_power_item -= item.damage
                 self.equipped_items["weapon"] = None
                 self.update_total_stats()
@@ -185,14 +185,14 @@ class Player:
         print(f"   Weapon  : {C.cyan(self.equipped_items["weapon"].name) if self.equipped_items["weapon"] is not None else C.yellow("No weapon equipped.")}")
         print(f"   Armor   : {C.cyan(self.equipped_items["armor"].name) if self.equipped_items["armor"] is not None else C.yellow("No armor wore.")}")
 
-        print(f"\n   Inventory ({len(self.inventory_items)}/{self.inventory_capacity}) :")
-        if not self.inventory_items:
+        print(f"\n   Inventory ({len(self.inventory.items)}/{self.inventory.capacity}) :")
+        if not self.inventory.items:
             print(C.yellow("\n   Your inventory is empty"))
         else:
             def elabel(index):
-                equipped_label = C.green(" (equipped) ") if self.inventory_items[index - 1].equipped else ""
+                equipped_label = C.green(" (equipped) ") if self.inventory.items[index - 1].equipped else ""
                 return equipped_label
-            for i, item in enumerate(self.inventory_items, start=1):
+            for i, item in enumerate(self.inventory.items, start=1):
                 print(f"   [{i}] {C.cyan(item.name)}{elabel(i)}: {item.description}")
 
             print(f"\n   {C.red("[")}d - Drop Item{C.red("]")} {C.green("[")}e/u - Equip, Unequip/Use Item{C.green("]")} {C.yellow("[")}q - Quit Inventory{C.yellow("]")}")
@@ -207,7 +207,7 @@ class Player:
                 try:
                     item_index, action = selection_action.split(", ")
                     item_index = int(item_index) - 1
-                    if (item_index) < 0 or item_index >= len(self.inventory_items):
+                    if (item_index) < 0 or item_index >= len(self.inventory.items):
                         print(C.yellow("   Invalid item index. Please choose again."))
                         continue
                 except ValueError:
@@ -215,15 +215,15 @@ class Player:
                     continue
 
                 if action == "d":
-                    self.inventory.remove_item(self.inventory_items[item_index])
+                    self.inventory.remove_item(self.inventory.items[item_index])
                     break
                 if action == "e" or action == "u":
-                    if self.inventory_items[item_index].equipped:
+                    if self.inventory.items[item_index].equipped:
                         print("s1")
-                        self.unequip_item(self.inventory_items[item_index])
+                        self.unequip_item(self.inventory.items[item_index])
                     else:
                         print("s2")
-                        self.equip_item(self.inventory_items[item_index])
+                        self.equip_item(self.inventory.items[item_index])
                     continue
                 else:
                     print(C.yellow("\n   Invalid action, please choose again."))
