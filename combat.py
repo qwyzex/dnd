@@ -13,14 +13,16 @@ def select_enemy(player):
     enemy = random.choice(enemies)
     return enemy
 
-def battle(player):
+def battle(player, enemy_level):
     enemy = select_enemy(player)
+    enemy.level = enemy_level
+    enemy.adapt()
 
     def battle_status():
         print(f"\nPlayer Health: {C.green(player.current_health)}")
         print(f"Enemy Health: {C.red(enemy.health)}")
 
-    print(f"A {C.red(enemy.name)} appears!")
+    print(f"{C.cyan(player.name)} ({player.level}) vs {C.red(enemy.name)} ({enemy.level})!")
     battle_status()
 
     # Function for continuing to next turn in combat
@@ -31,13 +33,13 @@ def battle(player):
             player.collect_gold(enemy.name, enemy.modifier_gold_chance, enemy.modifier_gold_amount)
             player.gain_experience(enemy.exp_gain)
             player.reduce_cooldown()
-            player.gain_worldItem(enemy.modifier_item_rarity)
+            player.gain_worldItem(enemy.modifier_item_rarity, enemy.level)
             player.current_room += 1
             if player.is_blocking:
                 player.is_blocking = False
             return True
 
-        # Continue battle
+        # Enemy combat logic
         enemy.attack_player(player)
 
         # Will Run Regardless

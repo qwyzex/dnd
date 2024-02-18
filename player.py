@@ -92,26 +92,20 @@ class Player:
 
     def increase_max_health(self):
         base_health_increase = 5
-        if self.level % 2 == 0:
-            health_increase = max(base_health_increase + (self.level // 2) - 2, 0)
-        else:
-            health_increase = max(base_health_increase + ((self.level - 1) // 2) - 2, 0)
+        health_increase = round(max((2 * self.level) + (self.level * 0.5) - 3, 0))
         self.health_max_base += health_increase
         self.current_health += health_increase
 
     def increase_attack_power(self):
         base_attack_increase = 1
-        if self.level % 2 == 0:
-            attack_increase = max(base_attack_increase + (self.level // 2) - 2, 1)
-        else:
-            attack_increase = max(base_attack_increase + ((self.level - 1) // 2) - 2, 1)
+        attack_increase = round(max(base_attack_increase + (self.level * 0.5 ) - 2, 1))
         self.attack_power_base += attack_increase
 
     def level_up(self):
         # Level and Experiences
         self.level += 1
         self.experience -= self.experience_to_next_level
-        self.experience_to_next_level += 38 + round(self.level * 0.6)
+        self.experience_to_next_level += round(31 * self.level + (0.9 * (self.level - 1)))
         # Health and Power
         self.increase_max_health()
         self.increase_attack_power()
@@ -125,7 +119,7 @@ class Player:
             self.heavy_attack_cooldown_duration -= 1
 
     # INVENTORY
-    def gain_worldItem(self, modifier):
+    def gain_worldItem(self, modifier, enemy_level):
         chance = random.random()
         if chance < modifier[2]:
             rarity = "c"
@@ -137,7 +131,7 @@ class Player:
             return None
 
         if rarity is not None:
-            item_library = WorldItems()
+            item_library = WorldItems(enemy_level)
             items_to_drop = [getattr(item_library, item_name) for item_name in vars(item_library) if not item_name.startswith('__')]
             items_to_drop = [item for item in items_to_drop if item.rarity == rarity]
 
@@ -183,7 +177,7 @@ class Player:
     def display_inventory(self, welcome):
         def display():
             clears()
-            print(f"CHARACTER SCREEN\n")
+            print(f"INVENTORY SCREEN\n")
 
             self.statf()
             print("")
@@ -197,10 +191,18 @@ class Player:
                 print(C.yellow("\n   Your inventory is empty"))
             else:
                 def elabel(index):
-                    equipped_label = C.green(" (equipped) ") if self.inventory.items[index].equipped else ""
+                    equipped_label = C.green("(equipped) ") if self.inventory.items[index].equipped == True else ""
                     return equipped_label
+                def slabel(index):
+                    if hasattr(self.inventory.items[index], 'damage'):
+                        stat_label = self.inventory.items[index].damage
+                    elif hasattr(self.inventory.items[index], 'defense'):
+                        stat_label = self.inventory.items[index].defense
+                    else:
+                        stat_label = ""
+                    return stat_label
                 for i, item in enumerate(self.inventory.items, start=0):
-                    print(f"   [{i + 1}] {C.cyan(item.name)}{elabel(i)}\n        └ {item.description}")
+                    print(f"   [{i + 1}] {C.cyan(item.name)} {C.yellow(item.level)} ({C.red(slabel(i))})\n        └ {elabel(i)}{item.description}")
 
                 print(f"\n   {C.red("[")}d - Drop Item{C.red("]")} {C.green("[")}e/u - Equip, Unequip/Use Item{C.green("]")} {C.yellow("[")}q - Quit Inventory{C.yellow("]")}")
                 print("   Select an item and what action to perform: ")

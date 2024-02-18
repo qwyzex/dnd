@@ -16,38 +16,44 @@ class Item:
 
 # Item type weapon
 class Weapon(Item):
-    def __init__(self, name, description, damage, rarity, equipped):
+    def __init__(self, name, level, description, damage, rarity, equipped):
         super().__init__(name, description)
         self.type = "weapon"
-        self.damage = damage
+        self.level = level
+        self.damage_raw = damage
+        self.damage = self.damage_raw * self.level
         self.equipped = equipped
         self.rarity = rarity
 
     def to_json(self):
         return {
             "name" : self.name,
+            "level": self.level,
             "description": self.description,
             "type" : self.type,
-            "damage" : self.damage,
+            "damage" : self.damage_raw,
             "equipped" : self.equipped,
             "rarity" : self.rarity
         }
 
 # Item type armor
 class Armor(Item):
-    def __init__(self, name, description, defense, rarity, equipped):
+    def __init__(self, name, level, description, defense, rarity, equipped):
         super().__init__(name, description)
         self.type = "armor"
-        self.defense = defense
+        self.level = level
+        self.defense_raw = defense
+        self.defense = self.defense_raw * self.level
         self.equipped = equipped
         self.rarity = rarity
 
     def to_json(self):
         return {
             "name" : self.name,
+            "level": self.level,
             "description": self.description,
             "type" : self.type,
-            "defense" : self.defense,
+            "defense" : self.defense_raw,
             "equipped" : self.equipped,
             "rarity" : self.rarity
         }
