@@ -46,7 +46,7 @@ class EnemyA:
         self.health = round(max(self.health * (self.level * 0.9), self.health))
         self.attack_power = round(max(self.attack_power * (self.level * 0.9), self.attack_power))
         # self.exp_gain = round(max(self.exp_gain * (self.level * 0.6), self.exp_gain))
-        self.exp_gain = round(self.exp_gain * self.level)
+        self.exp_gain = round(self.exp_gain * (self.level // 6))
         # Modifier of each unique enemy in combat
         self.modifier_gold_chance = self.modifier_gold_chance
         self.modifier_gold_amount = round(max(self.modifier_gold_amount * (self.level * 0.006), self.modifier_gold_amount))

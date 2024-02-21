@@ -163,46 +163,8 @@ def main():
 # Dungeon System
 def dungeon_explore(player, flag):
     def determine_appropriate_tier():
-        if player.level in range(1, 5):
-            return 1
-        elif player.level in range(5, 10):
-            return 2
-        elif player.level in range(10, 15):
-            return 3
-        elif player.level in range(15, 20):
-            return 4
-        elif player.level in range(20, 25):
-            return 5
-        elif player.level in range(25, 30):
-            return 6
-        elif player.level in range(30, 35):
-            return 7
-        elif player.level in range(35, 40):
-            return 8
-        elif player.level in range(40, 45):
-            return 9
-        elif player.level in range(45, 50):
-            return 10
-        elif player.level in range(50, 55):
-            return 11
-        elif player.level in range(55, 60):
-            return 12
-        elif player.level in range(60, 65):
-            return 13
-        elif player.level in range(65, 70):
-            return 14
-        elif player.level in range(70, 75):
-            return 15
-        elif player.level in range(75, 80):
-            return 16
-        elif player.level in range(80, 85):
-            return 17
-        elif player.level in range(85, 90):
-            return 18
-        elif player.level in range(90, 95):
-            return 19
-        elif player.level in range(95, 100):
-            return 20
+        tier = (player.level - 1) // 3 + 1
+        return min(tier, 34)
     appropriate_tier = determine_appropriate_tier()
     dungeon_tier = 1
     exit_confirmation_text = ""
