@@ -148,7 +148,7 @@ def main():
         elif command == "save" or command == "sv":
             save_game(player)
         elif command == "quit" or command == "exit" or command == "logout":
-            quit_confirmation = input(f"!> Are you sure you want to exit the game? [Enter, yes/no] ").strip().lower()
+            quit_confirmation = input("!> Are you sure you want to exit the game? [Enter, yes/no] ").strip().lower()
             if quit_confirmation == "yes" or quit_confirmation == "y" or quit_confirmation == "":
                 # UN-COMMENT 2 LINE BELLOW TO SAVE PLAYER DATA AUTOMATICALLY BEFORE EXITING THE GAME
                 print("")

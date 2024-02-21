@@ -21,7 +21,7 @@ class Player:
         # Level and Experience
         self.level = level[0]
         self.experience = level[1]
-        self.experience_to_next_level = 62 + (38 * round(self.level * 0.6))
+        self.experience_to_next_level = round(31 * self.level + (0.9 * (self.level - 1)))
         # Inventory
         self.inventory = inventory
         self.equipped_items = {
@@ -48,7 +48,7 @@ class Player:
         self.heal_cooldown = 0
         # Heavy Attack
         self.heavy_attack_mod = roundF(min(1.0 + (0.01 * self.level), 2.0))
-        self.heavy_attack_cooldown_duration = 5 if self.level < 10 else 4 if self.level >= 10 and self.level < 20 else 3
+        self.heavy_attack_cooldown_duration = 5 if self.level < 31 else 4 if self.level >= 31 and self.level < 61 else 3
         self.heavy_attack_cooldown = 0
         # Currencies
         self.currency_gold = gold
@@ -105,7 +105,7 @@ class Player:
         # Level and Experiences
         self.level += 1
         self.experience -= self.experience_to_next_level
-        self.experience_to_next_level += round(31 * self.level + (0.9 * (self.level - 1)))
+        self.experience_to_next_level += round(31 * self.level + (0.9 * max(1, (self.level - 1))))
         # Health and Power
         self.increase_max_health()
         self.increase_attack_power()
@@ -115,7 +115,7 @@ class Player:
         self.block_strength = round(self.level * 7.5 + self.health_max_item)
         self.heavy_attack_mod = roundF(min(1.0 + (0.01 * self.level), 2.0))
         # Every 12 level reduce heavy attack cooldown by 1 until it becomes 3
-        if self.level % 12 == 0 and self.heavy_attack_cooldown_duration > 3:
+        if self.level % 31 == 0 and self.heavy_attack_cooldown_duration > 3:
             self.heavy_attack_cooldown_duration -= 1
 
     # INVENTORY
@@ -187,8 +187,8 @@ class Player:
             print("")
 
             print("   ~ Equipped Items:")
-            print(f"   Weapon  : {C.cyan(self.equipped_items["weapon"].name) if self.equipped_items["weapon"] is not None else C.yellow("No weapon equipped.")}")
-            print(f"   Armor   : {C.cyan(self.equipped_items["armor"].name) if self.equipped_items["armor"] is not None else C.yellow("No armor wore.")}")
+            print(f"   Armor   : {C.cyan(self.equipped_items['armor'].name) if self.equipped_items['armor'] is not None else C.yellow('No armor wore.')}")
+            print(f"   Weapon  : {C.cyan(self.equipped_items['weapon'].name) if self.equipped_items['weapon'] is not None else C.yellow('No weapon equipped.')}")
 
             print(f"\n   ~ Inventory ({len(self.inventory.items)}/{self.inventory.capacity}) :")
             if not self.inventory.items:
@@ -208,7 +208,7 @@ class Player:
                 for i, item in enumerate(self.inventory.items, start=0):
                     print(f"   [{i + 1}] {C.cyan(item.name)} {C.yellow(item.level)} ({C.red(slabel(i))})\n        └ {elabel(i)}{item.description}")
 
-                print(f"\n   {C.red("[")}d - Drop Item{C.red("]")} {C.green("[")}e/u - Equip, Unequip/Use Item{C.green("]")} {C.yellow("[")}q - Quit Inventory{C.yellow("]")}")
+                print(f"\n   {C.red('[')}d - Drop Item{C.red(']')} {C.green('[')}e/u - Equip, Unequip/Use Item{C.green(']')} {C.yellow('[')}q - Quit Inventory{C.yellow(']')}")
                 print("   Select an item and what action to perform: ")
 
         display()
